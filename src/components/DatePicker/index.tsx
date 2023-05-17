@@ -1,6 +1,7 @@
 import { DatePickerInput as MantineDatePicker } from "@mantine/dates";
 import { Indicator } from "@mantine/core";
 import { Dispatch, SetStateAction } from "react";
+import { useMediaQuery } from "@mantine/hooks";
 
 const Datepicker = ({
   date,
@@ -9,6 +10,8 @@ const Datepicker = ({
   date: Date | null;
   setDate: Dispatch<SetStateAction<Date | null>>;
 }) => {
+  const matches = useMediaQuery("(min-width: 640px)");
+
   return (
     <MantineDatePicker
       value={date}
@@ -16,7 +19,6 @@ const Datepicker = ({
       placeholder="Pick date"
       valueFormat="MMMM D, YYYY"
       size="md"
-      radius="md"
       clearable={false}
       styles={() => ({
         dropdown: {
@@ -26,11 +28,19 @@ const Datepicker = ({
           height: "50px",
         },
         input: {
+          borderRadius: matches ? "8px" : "0px",
+          width: "150px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
           height: "50px",
-          border: "2px solid #F4F8F9",
-          color: "#494A4B",
+          border: "1px solid rgb(209 213 219)",
+          color: "#000",
           fontFamily: "Inter",
           fontSize: "14px",
+          fontWeight: 500,
+          backgroundColor: "#ffffff !important",
         },
       })}
       renderDay={(date) => {

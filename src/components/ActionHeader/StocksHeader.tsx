@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Datepicker from "../DatePicker";
-/* import SearchBar from "../SearchBar"; */
+import SearchBar from "../SearchBar";
 import { AiOutlinePlus } from "react-icons/ai";
 import { CgFileAdd } from "react-icons/cg";
 import Link from "next/link";
@@ -49,11 +49,11 @@ const StocksHeader = () => {
   }, [dispatch, router.events]);
 
   return (
-    <div>
+    <div className="w-full my-3 flex flex-row gap-2 h-[50px]">
       <div>
         <Datepicker date={date} setDate={setDate} />
       </div>
-      {/* <SearchBar query={query} setQuery={setQuery} /> */}
+      <SearchBar query={query} setQuery={setQuery} />
       {/* <button as={Link} href="/stocks/new">
         <Text type="MediumSemibold">Add</Text>
         <Text type="MediumSemibold">New</Text>
