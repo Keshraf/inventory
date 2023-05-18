@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { nanoid } from "@reduxjs/toolkit";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -38,6 +39,9 @@ export default function Signup() {
 
   return (
     <>
+      <Head>
+        <title>Sign Up</title>
+      </Head>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-white h-screen">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Link href="/">

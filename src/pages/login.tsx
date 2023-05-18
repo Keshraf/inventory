@@ -1,4 +1,5 @@
 import { account } from "@/utils/client";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -23,6 +24,9 @@ export default function Login() {
 
   return (
     <>
+      <Head>
+        <title>Log in</title>
+      </Head>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-white h-screen">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Link href="/">

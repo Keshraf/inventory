@@ -1,8 +1,12 @@
+import Head from "next/head";
 import Link from "next/link";
 
 export default function Page404() {
   return (
     <>
+      <Head>
+        <title>OOPs</title>
+      </Head>
       <main className="grid min-h-screen place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="text-center">
           <p className="text-base font-semibold text-indigo-600">404</p>
