@@ -6,7 +6,7 @@ import { Inter } from "next/font/google";
 import store from "@/store";
 import { ReactElement, ReactNode } from "react";
 import { NextPage } from "next";
-import Session from "@/components/Session";
+import { SessionPrivate, SessionPublic } from "@/components/Session";
 
 const inter = Inter({
   subsets: ["latin-ext"],
@@ -40,11 +40,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
             }}
           />
           {privatePage ? (
-            <Session>
+            <SessionPrivate>
               <Component {...pageProps} />
-            </Session>
+            </SessionPrivate>
           ) : (
-            <Component {...pageProps} />
+            <SessionPublic>
+              <Component {...pageProps} />
+            </SessionPublic>
           )}
         </main>
       </ReduxProvider>

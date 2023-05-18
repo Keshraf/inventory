@@ -3,16 +3,20 @@ import { setUser } from "@/store/user";
 import { account } from "@/utils/client";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Loader from "../Loader";
 
 type Props = {
   children: React.ReactNode;
 };
-const Session = ({ children }: Props) => {
+const SessionPrivate = ({ children }: Props) => {
   const [active, setActive] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    const privatePages = ["/stocks", "/orders", "/clients", "/upload"];
+    const publicPages = ["/login", "/signup", "/"];
+
     account
       .get()
       .then((res) => {
@@ -24,6 +28,9 @@ const Session = ({ children }: Props) => {
           })
         );
         setActive(true);
+        /* if (publicPages.includes(router.pathname)) {
+          router.push("/stocks");
+        } */
       })
       .catch((err) => {
         dispatch(
@@ -36,7 +43,7 @@ const Session = ({ children }: Props) => {
       });
   }, [router, dispatch]);
 
-  return <>{active ? children : null}</>;
+  return <>{active ? children : <Loader />}</>;
 };
 
-export default Session;
+export default SessionPrivate;
