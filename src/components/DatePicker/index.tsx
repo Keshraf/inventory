@@ -29,7 +29,7 @@ const Datepicker = ({
         },
         input: {
           borderRadius: matches ? "8px" : "0px",
-          width: "150px",
+          width: matches ? "150px" : "100%",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",

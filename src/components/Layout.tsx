@@ -22,40 +22,27 @@ const userNavigation = [
 type Navigation = {
   name: string;
   href: string;
-  current: boolean;
 };
 
 type Props = {
   children?: React.ReactNode;
 };
 
-/* const navigation = [
-  { name: "Stocks", href: "/stocks", current: true },
-  { name: "Orders", href: "/orders", current: false },
-  { name: "Clients", href: "/clients", current: false },
-  { name: "Upload", href: "/upload", current: false },
-]; */
-
 export default function Layout({ children }: Props) {
   const router = useRouter();
-  const [navigation, setNavigation] = useState<Navigation[]>([
-    { name: "Stocks", href: "/stocks", current: true },
-    { name: "Orders", href: "/orders", current: false },
-    { name: "Clients", href: "/clients", current: false },
-    { name: "Upload", href: "/upload", current: false },
-  ]);
+  const navigation: Navigation[] = [
+    { name: "Stocks", href: "/stocks" },
+    { name: "Orders", href: "/orders" },
+    { name: "Clients", href: "/clients" },
+    { name: "Upload", href: "/upload" },
+  ];
+  const [currentTab, setCurrentTab] = useState<string>("");
 
   useEffect(() => {
-    setNavigation((prev) => {
-      return prev.map((item) => {
-        if (item.href === router.pathname) {
-          return { ...item, current: true };
-        } else {
-          return { ...item, current: false };
-        }
-      });
-    });
-  }, [router.pathname]);
+    if (router.pathname !== currentTab) {
+      setCurrentTab(router.pathname);
+    }
+  }, [router.pathname, currentTab]);
 
   return (
     <>
@@ -88,12 +75,14 @@ export default function Layout({ children }: Props) {
                           key={item.name}
                           href={item.href}
                           className={cn(
-                            item.current
+                            item.href === currentTab
                               ? "border-indigo-500 text-gray-900"
                               : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
                             "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
                           )}
-                          aria-current={item.current ? "page" : undefined}
+                          aria-current={
+                            item.href === currentTab ? "page" : undefined
+                          }
                         >
                           {item.name}
                         </Link>
@@ -174,12 +163,14 @@ export default function Layout({ children }: Props) {
                       as={Link}
                       href={item.href}
                       className={cn(
-                        item.current
+                        item.href === currentTab
                           ? "border-indigo-500 bg-indigo-50 text-indigo-700"
                           : "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800",
                         "block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
                       )}
-                      aria-current={item.current ? "page" : undefined}
+                      aria-current={
+                        item.href === currentTab ? "page" : undefined
+                      }
                     >
                       {item.name}
                     </Disclosure.Button>
@@ -228,7 +219,7 @@ export default function Layout({ children }: Props) {
           <header>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-                {navigation.find((item) => item.current)?.name}
+                {navigation.find((item) => item.href === currentTab)?.name}
               </h1>
             </div>
           </header>

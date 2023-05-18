@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { BiSearch } from "react-icons/bi";
 import { Dispatch, SetStateAction } from "react";
 
 const SearchBar = ({
@@ -10,9 +8,9 @@ const SearchBar = ({
   setQuery: Dispatch<SetStateAction<string>>;
 }) => {
   return (
-    <div className="flex-1 w-52 max-w-full">
+    <div className="flex-1 sm:w-52 w-full min-h-[50px]">
       <input
-        className="w-full text-black h-full indent-2 pr-2 py-1 sm:rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        className="w-full text-black min-h-[50px] h-full indent-2 pr-2 py-1 sm:rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
         value={query}
         id="search"
         type="text"

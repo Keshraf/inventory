@@ -1,25 +1,10 @@
 import { useEffect, useState } from "react";
 import Datepicker from "../DatePicker";
 import SearchBar from "../SearchBar";
-import { AiOutlinePlus } from "react-icons/ai";
-import { CgFileAdd } from "react-icons/cg";
-import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { setSearch } from "../../store/search";
 import { useRouter } from "next/router";
-
-/* const Container = styled("div", {
-  width: "100%",
-  height: "50px",
-  start: true,
-  gap: "$gapMedium",
-});
-
-const DateContainer = styled("div", {
-  width: "250px",
-  height: "50px",
-  minWidth: "156px",
-}); */
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 
 const StocksHeader = () => {
   const search = useAppSelector((state) => state.search);
@@ -49,22 +34,18 @@ const StocksHeader = () => {
   }, [dispatch, router.events]);
 
   return (
-    <div className="w-full my-3 flex flex-row gap-2 h-[50px]">
+    <div className="w-full my-3 flex sm:flex-row flex-col gap-2 h-auto">
       <div>
         <Datepicker date={date} setDate={setDate} />
       </div>
       <SearchBar query={query} setQuery={setQuery} />
-      {/* <button as={Link} href="/stocks/new">
-        <Text type="MediumSemibold">Add</Text>
-        <Text type="MediumSemibold">New</Text>
-        <Text type="MediumSemibold">Stock</Text>
-        <CgFileAdd fontSize={18} color={theme.colors.content.value} />
-      </button> */}
-      {/* <Button as={Link} href="/orders/new">
-        <Text type="MediumSemibold">Place</Text>
-        <Text type="MediumSemibold">Order</Text>
-        <AiOutlinePlus fontSize={18} color={theme.colors.content.value} />
-      </Button> */}
+      <button
+        type="button"
+        className="sm:inline-flex min-h-[50px] hidden items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      >
+        <ArrowDownTrayIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+        Export
+      </button>
     </div>
   );
 };
