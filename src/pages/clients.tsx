@@ -11,4 +11,6 @@ const ClientsPage = () => {
   );
 };
 
+ClientsPage.private = true;
+
 export default ClientsPage;

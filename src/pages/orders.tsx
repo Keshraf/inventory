@@ -11,4 +11,6 @@ const OrdersPage = () => {
   );
 };
 
+OrdersPage.private = true;
+
 export default OrdersPage;

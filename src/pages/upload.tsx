@@ -11,4 +11,6 @@ const UploadPage = () => {
   );
 };
 
+UploadPage.private = true;
+
 export default UploadPage;

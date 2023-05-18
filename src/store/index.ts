@@ -7,6 +7,7 @@ import selectedSpecsReducer from "./selectedSpecs";
 import selectedStocksReducer from "./selectedStocks";
 import selectedAddStockReducer from "./selectedAddStock";
 import selectedOrderReducer from "./selectedOrder";
+import userReducer from "./user";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     selectedStocks: selectedStocksReducer,
     selectedAddStock: selectedAddStockReducer,
     selectedOrder: selectedOrderReducer,
+    user: userReducer,
   },
 });
 

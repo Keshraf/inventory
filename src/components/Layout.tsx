@@ -5,19 +5,9 @@ import { cn } from "@/utils/cn";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
-
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
-];
+import { useAppSelector } from "@/store";
+import { account } from "@/utils/client";
+import { toast } from "react-hot-toast";
 
 type Navigation = {
   name: string;
@@ -30,6 +20,7 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   const router = useRouter();
+  const userNavigation = [{ name: "Sign out", action: logoutHandler }];
   const navigation: Navigation[] = [
     { name: "Stocks", href: "/stocks" },
     { name: "Orders", href: "/orders" },
@@ -37,12 +28,27 @@ export default function Layout({ children }: Props) {
     { name: "Upload", href: "/upload" },
   ];
   const [currentTab, setCurrentTab] = useState<string>("");
+  const user = useAppSelector((state) => state.user);
 
   useEffect(() => {
     if (router.pathname !== currentTab) {
       setCurrentTab(router.pathname);
     }
   }, [router.pathname, currentTab]);
+
+  async function logoutHandler() {
+    await account.getSession("current").then(async (session) => {
+      const id = session.$id;
+      await account
+        .deleteSession(id)
+        .then(() => {
+          router.push("/login");
+        })
+        .catch((err) => {
+          toast.error("Error logging out.");
+        });
+    });
+  }
 
   return (
     <>
@@ -119,15 +125,15 @@ export default function Layout({ children }: Props) {
                           {userNavigation.map((item) => (
                             <Menu.Item key={item.name}>
                               {({ active }) => (
-                                <Link
-                                  href={item.href}
+                                <button
+                                  onClick={item.action}
                                   className={cn(
                                     active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
+                                    "block px-4 py-2 text-sm text-gray-700 w-full text-left"
                                   )}
                                 >
                                   {item.name}
-                                </Link>
+                                </button>
                               )}
                             </Menu.Item>
                           ))}
@@ -201,9 +207,9 @@ export default function Layout({ children }: Props) {
                     {userNavigation.map((item) => (
                       <Disclosure.Button
                         key={item.name}
-                        as="a"
-                        href={item.href}
-                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                        as="button"
+                        onClick={item.action}
+                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 w-full text-left"
                       >
                         {item.name}
                       </Disclosure.Button>

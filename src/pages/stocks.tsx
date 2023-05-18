@@ -13,4 +13,6 @@ const StocksPage = () => {
   );
 };
 
+StocksPage.private = true;
+
 export default StocksPage;

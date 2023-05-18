@@ -20,12 +20,17 @@ const Datepicker = ({
       valueFormat="MMMM D, YYYY"
       size="md"
       clearable={false}
+      className="font-sans"
       styles={() => ({
+        root: {
+          fontFamily: "Inter",
+        },
         dropdown: {
           background: "#fff",
         },
         wrapper: {
           height: "50px",
+          fontFamily: "Inter",
         },
         input: {
           borderRadius: matches ? "8px" : "0px",
