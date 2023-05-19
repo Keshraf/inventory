@@ -21,9 +21,16 @@ export default function Signup() {
         .create(nanoid(), email, password, name)
         .then(async (res) => {
           toast.success("Account created successfully");
+          await fetch("/api/sendMail", {
+            method: "POST",
+            body: JSON.stringify({
+              subject: "Login Alert - Balaji Stocks",
+              text: `Someone just signed up to Balaji Stocks with email ${email} and name ${name}`,
+            }),
+          });
           await account
             .createEmailSession(email, password)
-            .then((_) => {
+            .then(async (_) => {
               router.push("/stocks");
             })
             .catch((err) => {

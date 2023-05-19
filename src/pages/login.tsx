@@ -14,7 +14,14 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      await account.createEmailSession(email, password).then((_) => {
+      await account.createEmailSession(email, password).then(async (_) => {
+        await fetch("/api/sendMail", {
+          method: "POST",
+          body: JSON.stringify({
+            subject: "Login Alert - Balaji Stocks",
+            text: `Someone just logged in to Balaji Stocks with email ${email}`,
+          }),
+        });
         router.push("/stocks");
       });
     } catch (error) {
