@@ -16,10 +16,12 @@ export default async function handler(req: Request, res: NextApiResponse) {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
+  const data = JSON.parse(req.body);
+
   const mail: SendMailOptions = {
     ...mailOptions,
-    subject: req.body.subject,
-    text: req.body.text,
+    subject: data.subject,
+    text: data.text,
   };
 
   try {
