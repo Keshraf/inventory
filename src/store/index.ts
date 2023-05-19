@@ -3,20 +3,12 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import searchReducer from "./search";
 import filterReducer from "./filter";
-import selectedSpecsReducer from "./selectedSpecs";
-import selectedStocksReducer from "./selectedStocks";
-import selectedAddStockReducer from "./selectedAddStock";
-import selectedOrderReducer from "./selectedOrder";
 import userReducer from "./user";
 
 const store = configureStore({
   reducer: {
     search: searchReducer,
     filter: filterReducer,
-    selectedSpecs: selectedSpecsReducer,
-    selectedStocks: selectedStocksReducer,
-    selectedAddStock: selectedAddStockReducer,
-    selectedOrder: selectedOrderReducer,
     user: userReducer,
   },
 });
