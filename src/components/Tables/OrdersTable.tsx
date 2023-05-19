@@ -1,117 +1,7 @@
+import useGetOrders from "@/hooks/useGetOrders";
+import useGetStocks from "@/hooks/useGetStocks";
 import { cn } from "@/utils/cn";
 import { useLayoutEffect, useRef, useState } from "react";
-
-const people = [
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  // More people...
-];
 
 const tabs = [
   { name: "Pending", href: "#", current: false },
@@ -119,25 +9,42 @@ const tabs = [
   { name: "Shipped", href: "#", current: true },
 ];
 
-export default function OrdersTable() {
-  const checkbox = useRef();
-  const [checked, setChecked] = useState(false);
-  const [indeterminate, setIndeterminate] = useState(false);
-  const [selectedPeople, setSelectedPeople] = useState([]);
+type Tab = "Pending" | "Billed" | "Shipped";
 
-  useLayoutEffect(() => {
-    const isIndeterminate =
-      selectedPeople.length > 0 && selectedPeople.length < people.length;
-    setChecked(selectedPeople.length === people.length);
-    setIndeterminate(isIndeterminate);
-    checkbox.current.indeterminate = isIndeterminate;
-  }, [selectedPeople]);
+export default function OrdersTable() {
+  const checkbox = useRef(null);
+  const [checked, setChecked] = useState(false);
+  const [currentTab, setCurrentTab] = useState<Tab>("Pending");
+  const [indeterminate, setIndeterminate] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+
+  const allTabs: Tab[] = ["Pending", "Billed", "Shipped"];
+
+  const { data, isError, isLoading } = useGetStocks();
 
   function toggleAll() {
-    setSelectedPeople(checked || indeterminate ? [] : people);
-    setChecked(!checked && !indeterminate);
-    setIndeterminate(false);
+    setSelectedPeople((prev) => {
+      if (prev.length === data.length) {
+        setChecked(false);
+        return [];
+      } else {
+        setChecked(true);
+        return data.map((s) => s.$id);
+      }
+    });
   }
+
+  console.log("Prder", data);
+
+  const headers = [
+    "Mill",
+    "Quality",
+    "Size",
+    "Weight",
+    "GSM",
+    "Sheets",
+    "Quantity",
+  ];
 
   return (
     <>
@@ -151,29 +58,29 @@ export default function OrdersTable() {
             id="tabs"
             name="tabs"
             className="block w-full sm:rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-black mt-3"
-            defaultValue={tabs.find((tab) => tab.current).name}
+            value={currentTab}
+            onChange={(e) => setCurrentTab(e.target.value as Tab)}
           >
-            {tabs.map((tab) => (
-              <option key={tab.name}>{tab.name}</option>
+            {allTabs.map((tab) => (
+              <option key={tab}>{tab}</option>
             ))}
           </select>
         </div>
         <div className="hidden sm:block my-4">
           <nav className="flex space-x-4" aria-label="Tabs">
-            {tabs.map((tab) => (
-              <a
-                key={tab.name}
-                href={tab.href}
+            {allTabs.map((tab) => (
+              <button
+                onClick={() => setCurrentTab(tab)}
+                key={tab}
                 className={cn(
-                  tab.current
+                  tab === currentTab
                     ? "bg-indigo-100 text-indigo-700"
                     : "text-gray-500 hover:text-gray-700",
                   "rounded-md px-3 py-2 text-sm font-medium"
                 )}
-                aria-current={tab.current ? "page" : undefined}
               >
-                {tab.name}
-              </a>
+                {tab}
+              </button>
             ))}
           </nav>
         </div>
@@ -212,30 +119,15 @@ export default function OrdersTable() {
                           onChange={toggleAll}
                         />
                       </th>
-                      <th
-                        scope="col"
-                        className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Name
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Title
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Email
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Role
-                      </th>
+                      {headers.map((header) => (
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                          key={header}
+                        >
+                          {header}
+                        </th>
+                      ))}
                       <th
                         scope="col"
                         className="relative py-3.5 pl-3 pr-4 sm:pr-3"
@@ -245,62 +137,86 @@ export default function OrdersTable() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {people.map((person) => (
-                      <tr
-                        key={person.email}
-                        className={
-                          selectedPeople.includes(person)
-                            ? "bg-gray-50"
-                            : undefined
-                        }
+                    <tr className="border-t border-gray-200">
+                      <th
+                        colSpan={7}
+                        scope="colgroup"
+                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
                       >
-                        <td className="relative px-7 sm:w-12 sm:px-6">
-                          {selectedPeople.includes(person) && (
-                            <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
-                          )}
-                          <input
-                            type="checkbox"
-                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                            value={person.email}
-                            checked={selectedPeople.includes(person)}
-                            onChange={(e) =>
-                              setSelectedPeople(
-                                e.target.checked
-                                  ? [...selectedPeople, person]
-                                  : selectedPeople.filter((p) => p !== person)
-                              )
-                            }
-                          />
-                        </td>
-                        <td
-                          className={cn(
-                            "whitespace-nowrap py-4 pr-3 text-sm font-medium",
-                            selectedPeople.includes(person)
-                              ? "text-indigo-600"
-                              : "text-gray-900"
-                          )}
+                        {"Ketan Saraf"}
+                        <span className="ml-1 text-gray-500 font-light">
+                          {"- H-20, New Alipore, Kolkata, West Bengal, 700053"}
+                        </span>
+                      </th>
+                      <th
+                        colSpan={4}
+                        scope="colgroup"
+                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
+                      >
+                        {"Ketan Saraf"}
+                        <span className="ml-1 text-gray-500 font-light">
+                          {"- H-20, New Alipore, Kolkata, West Bengal, 700053"}
+                        </span>
+                      </th>
+                    </tr>
+                    {!isLoading &&
+                      data.map((stock) => (
+                        <tr
+                          key={stock.$id}
+                          className={
+                            selectedPeople.includes(stock.$id)
+                              ? "bg-gray-50"
+                              : undefined
+                          }
                         >
-                          {person.name}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {person.title}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {person.email}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {person.role}
-                        </td>
-                        <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                          <a
-                            href="#"
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            Edit<span className="sr-only">, {person.name}</span>
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
+                          <td className="relative px-7 sm:w-12 sm:px-6">
+                            {selectedPeople.includes(stock.$id) && (
+                              <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
+                            )}
+                            <input
+                              type="checkbox"
+                              className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                              value={stock.$id}
+                              checked={selectedPeople.includes(stock.$id)}
+                              onChange={(e) =>
+                                setSelectedPeople((prev) => {
+                                  if (prev.includes(stock.$id)) {
+                                    return prev.filter((p) => p !== stock.$id);
+                                  } else {
+                                    return [...prev, stock.$id];
+                                  }
+                                })
+                              }
+                            />
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.mill}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.quality}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.breadth + "X" + stock.length}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.weigth}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.gsm}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.sheets}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {stock.quantity}
+                          </td>
+                          <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                            <button className="text-indigo-600 hover:text-indigo-900">
+                              Edit<span className="sr-only">, {stock.$id}</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

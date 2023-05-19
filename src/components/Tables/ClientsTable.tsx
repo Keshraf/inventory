@@ -1,137 +1,28 @@
+import useGetClients from "@/hooks/useGetClients";
+import useGetStocks from "@/hooks/useGetStocks";
 import { cn } from "@/utils/cn";
-import { useLayoutEffect, useRef, useState } from "react";
-
-const people = [
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  // More people...
-];
+import { useRef, useState } from "react";
 
 export default function ClientsTable() {
-  const checkbox = useRef();
+  const checkbox = useRef(null);
   const [checked, setChecked] = useState(false);
-  const [indeterminate, setIndeterminate] = useState(false);
-  const [selectedPeople, setSelectedPeople] = useState([]);
+  const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
 
-  useLayoutEffect(() => {
-    const isIndeterminate =
-      selectedPeople.length > 0 && selectedPeople.length < people.length;
-    setChecked(selectedPeople.length === people.length);
-    setIndeterminate(isIndeterminate);
-    checkbox.current.indeterminate = isIndeterminate;
-  }, [selectedPeople]);
+  const { data, isError, isLoading } = useGetClients();
 
   function toggleAll() {
-    setSelectedPeople(checked || indeterminate ? [] : people);
-    setChecked(!checked && !indeterminate);
-    setIndeterminate(false);
+    setSelectedPeople((prev) => {
+      if (prev.length === data.length) {
+        setChecked(false);
+        return [];
+      } else {
+        setChecked(true);
+        return data.map((s) => s.$id);
+      }
+    });
   }
+
+  const headers = ["Name", "Mobile", "Address"];
 
   return (
     <div className="sm:px-0 lg:px-0">
@@ -167,30 +58,15 @@ export default function ClientsTable() {
                         onChange={toggleAll}
                       />
                     </th>
-                    <th
-                      scope="col"
-                      className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Title
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Email
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Role
-                    </th>
+                    {headers.map((header) => (
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        key={header}
+                      >
+                        {header}
+                      </th>
+                    ))}
                     <th
                       scope="col"
                       className="relative py-3.5 pl-3 pr-4 sm:pr-3"
@@ -200,62 +76,52 @@ export default function ClientsTable() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {people.map((person) => (
-                    <tr
-                      key={person.email}
-                      className={
-                        selectedPeople.includes(person)
-                          ? "bg-gray-50"
-                          : undefined
-                      }
-                    >
-                      <td className="relative px-7 sm:w-12 sm:px-6">
-                        {selectedPeople.includes(person) && (
-                          <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
-                        )}
-                        <input
-                          type="checkbox"
-                          className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                          value={person.email}
-                          checked={selectedPeople.includes(person)}
-                          onChange={(e) =>
-                            setSelectedPeople(
-                              e.target.checked
-                                ? [...selectedPeople, person]
-                                : selectedPeople.filter((p) => p !== person)
-                            )
-                          }
-                        />
-                      </td>
-                      <td
-                        className={cn(
-                          "whitespace-nowrap py-4 pr-3 text-sm font-medium",
-                          selectedPeople.includes(person)
-                            ? "text-indigo-600"
-                            : "text-gray-900"
-                        )}
+                  {!isLoading &&
+                    data.map((stock) => (
+                      <tr
+                        key={stock.$id}
+                        className={
+                          selectedPeople.includes(stock.$id)
+                            ? "bg-gray-50"
+                            : undefined
+                        }
                       >
-                        {person.name}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.title}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.email}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.role}
-                      </td>
-                      <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                        <a
-                          href="#"
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Edit<span className="sr-only">, {person.name}</span>
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
+                        <td className="relative px-7 sm:w-12 sm:px-6">
+                          {selectedPeople.includes(stock.$id) && (
+                            <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
+                          )}
+                          <input
+                            type="checkbox"
+                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                            value={stock.$id}
+                            checked={selectedPeople.includes(stock.$id)}
+                            onChange={(e) =>
+                              setSelectedPeople((prev) => {
+                                if (prev.includes(stock.$id)) {
+                                  return prev.filter((p) => p !== stock.$id);
+                                } else {
+                                  return [...prev, stock.$id];
+                                }
+                              })
+                            }
+                          />
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {stock.name}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {stock.mobile}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {stock.address}
+                        </td>
+                        <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                          <button className="text-indigo-600 hover:text-indigo-900">
+                            Edit<span className="sr-only">, {stock.$id}</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
