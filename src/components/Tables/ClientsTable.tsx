@@ -10,9 +10,7 @@ export default function ClientsTable() {
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
   const date = useAppSelector((state) => new Date(JSON.parse(state.date)));
 
-  const { data, isError, isLoading } = useGetClients({
-    date: date,
-  });
+  const { data, isError, isLoading } = useGetClients();
 
   function toggleAll() {
     if (!isLoading && data) {
