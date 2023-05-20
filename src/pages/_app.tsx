@@ -7,6 +7,7 @@ import store from "@/store";
 import { ReactElement, ReactNode } from "react";
 import { NextPage } from "next";
 import { SessionPrivate, SessionPublic } from "@/components/Session";
+import { SWRConfig } from "swr";
 
 const inter = Inter({
   subsets: ["latin-ext"],
@@ -26,30 +27,32 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <>
-      <ReduxProvider store={store}>
-        <main className={inter.className}>
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 1000,
-              style: {
-                background: "$fff",
-                color: "#000",
-                fontFamily: "Inter",
-              },
-            }}
-          />
-          {privatePage ? (
-            <SessionPrivate>
-              <Component {...pageProps} />
-            </SessionPrivate>
-          ) : (
-            <SessionPublic>
-              <Component {...pageProps} />
-            </SessionPublic>
-          )}
-        </main>
-      </ReduxProvider>
+      <SWRConfig>
+        <ReduxProvider store={store}>
+          <main className={inter.className}>
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                duration: 1000,
+                style: {
+                  background: "$fff",
+                  color: "#000",
+                  fontFamily: "Inter",
+                },
+              }}
+            />
+            {privatePage ? (
+              <SessionPrivate>
+                <Component {...pageProps} />
+              </SessionPrivate>
+            ) : (
+              <SessionPublic>
+                <Component {...pageProps} />
+              </SessionPublic>
+            )}
+          </main>
+        </ReduxProvider>
+      </SWRConfig>
     </>
   );
 }

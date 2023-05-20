@@ -2,6 +2,7 @@ import StocksHeader from "@/components/ActionHeader/StocksHeader";
 import Layout from "@/components/Layout";
 import StocksTable from "@/components/Tables/StocksTable";
 import Head from "next/head";
+import { useState } from "react";
 
 const StocksPage = () => {
   return (

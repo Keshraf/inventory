@@ -1,5 +1,6 @@
 import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
+import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
 import { useLayoutEffect, useRef, useState } from "react";
 
@@ -10,8 +11,11 @@ export default function OrdersTable() {
   const [checked, setChecked] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const date = useAppSelector((state) =>
+    new Date(JSON.parse(state.date)).toLocaleDateString("in")
+  );
 
-  const { data, isError, isLoading } = useGetStocks();
+  const { data, isError, isLoading } = useGetStocks(date);
 
   function toggleAll() {
     if (!isLoading && data) {

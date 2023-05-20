@@ -2,20 +2,27 @@ import { DatePickerInput as MantineDatePicker } from "@mantine/dates";
 import { Indicator } from "@mantine/core";
 import { Dispatch, SetStateAction } from "react";
 import { useMediaQuery } from "@mantine/hooks";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { setDate } from "@/store/date";
 
-const Datepicker = ({
-  date,
-  setDate,
-}: {
-  date: Date | null;
-  setDate: Dispatch<SetStateAction<Date | null>>;
-}) => {
+type Props = {
+  onChange?: () => void;
+};
+
+const Datepicker = ({ onChange }: Props) => {
   const matches = useMediaQuery("(min-width: 640px)");
+  const date = useAppSelector((state) => new Date(JSON.parse(state.date)));
+  const dispatch = useAppDispatch();
+
+  console.log("date", date);
 
   return (
     <MantineDatePicker
       value={date}
-      onChange={setDate}
+      onChange={(v) => {
+        dispatch(setDate(v ? v : new Date()));
+        onChange && onChange();
+      }}
       placeholder="Pick date"
       valueFormat="MMMM D, YYYY"
       size="md"

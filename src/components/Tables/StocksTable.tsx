@@ -1,4 +1,6 @@
+import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
+import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
 import { useRef, useState } from "react";
 
@@ -6,8 +8,17 @@ export default function StocksTable() {
   const checkbox = useRef(null);
   const [checked, setChecked] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const date = useAppSelector((state) =>
+    new Date(JSON.parse(state.date)).toLocaleDateString("in")
+  );
 
-  const { data, isError, isLoading } = useGetStocks();
+  const { data, isError, isLoading } = useGetStocks(date);
+
+  const {
+    data: orderData,
+    isError: isOrderError,
+    isLoading: isOrderLoading,
+  } = useGetOrders(date);
 
   function toggleAll() {
     if (!isLoading && data) {
@@ -22,6 +33,29 @@ export default function StocksTable() {
       });
     }
   }
+
+  if (isLoading || isOrderLoading || !data || !orderData) {
+    console.log("loading");
+    return <></>;
+  }
+
+  console.log("data", data);
+
+  console.log(
+    "REDUCED",
+    data.map((stock) => {
+      const orderQuantity = orderData
+        .filter((order) => order.stockId === stock.$id)
+        .reduce((acc, order) => {
+          return acc + order.quantity;
+        }, 0);
+
+      return {
+        ...stock,
+        quantity: stock.quantity - orderQuantity,
+      };
+    })
+  );
 
   const headers = [
     "Mill",

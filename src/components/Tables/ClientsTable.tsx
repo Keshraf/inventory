@@ -1,5 +1,6 @@
 import useGetClients from "@/hooks/useGetClients";
 import useGetStocks from "@/hooks/useGetStocks";
+import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
 import { useRef, useState } from "react";
 
@@ -7,8 +8,11 @@ export default function ClientsTable() {
   const checkbox = useRef(null);
   const [checked, setChecked] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const date = useAppSelector((state) => new Date(JSON.parse(state.date)));
 
-  const { data, isError, isLoading } = useGetClients();
+  const { data, isError, isLoading } = useGetClients({
+    date: date,
+  });
 
   function toggleAll() {
     if (!isLoading && data) {

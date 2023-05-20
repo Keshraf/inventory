@@ -5,12 +5,13 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { setSearch } from "../../store/search";
 import { useRouter } from "next/router";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { useSWRConfig } from "swr";
 
 const StocksHeader = () => {
   const search = useAppSelector((state) => state.search);
   const [query, setQuery] = useState<string>(search);
-  const [date, setDate] = useState<Date | null>(new Date());
   const dispatch = useAppDispatch();
+  const { mutate } = useSWRConfig();
 
   const router = useRouter();
 
@@ -36,7 +37,7 @@ const StocksHeader = () => {
   return (
     <div className="w-full my-3 flex sm:flex-row flex-col gap-2 h-auto">
       <div>
-        <Datepicker date={date} setDate={setDate} />
+        <Datepicker />
       </div>
       <SearchBar query={query} setQuery={setQuery} />
       <button

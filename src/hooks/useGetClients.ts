@@ -1,4 +1,5 @@
 import { clientsCollection, databaseId, databases } from "@/utils/client";
+import { Query } from "appwrite";
 import useSWR from "swr";
 
 const useGetClients = () => {

@@ -9,7 +9,6 @@ import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 const ClientsHeader = () => {
   const search = useAppSelector((state) => state.search);
   const [query, setQuery] = useState<string>(search);
-  const [date, setDate] = useState<Date | null>(new Date());
   const dispatch = useAppDispatch();
 
   const router = useRouter();
@@ -36,7 +35,7 @@ const ClientsHeader = () => {
   return (
     <div className="w-full my-3 flex sm:flex-row flex-col gap-2 h-auto">
       <div>
-        <Datepicker date={date} setDate={setDate} />
+        <Datepicker />
       </div>
       <SearchBar query={query} setQuery={setQuery} />
       <button

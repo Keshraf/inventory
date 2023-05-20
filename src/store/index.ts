@@ -4,12 +4,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import searchReducer from "./search";
 import filterReducer from "./filter";
 import userReducer from "./user";
+import dateReducer from "./date";
 
 const store = configureStore({
   reducer: {
     search: searchReducer,
     filter: filterReducer,
     user: userReducer,
+    date: dateReducer,
   },
 });
 
