@@ -3,40 +3,34 @@ import useGetStocks from "@/hooks/useGetStocks";
 import { cn } from "@/utils/cn";
 import { useLayoutEffect, useRef, useState } from "react";
 
-const tabs = [
-  { name: "Pending", href: "#", current: false },
-  { name: "Billed", href: "#", current: false },
-  { name: "Shipped", href: "#", current: true },
-];
-
 type Tab = "Pending" | "Billed" | "Shipped";
 
 export default function OrdersTable() {
   const checkbox = useRef(null);
   const [checked, setChecked] = useState(false);
-  const [currentTab, setCurrentTab] = useState<Tab>("Pending");
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
-
-  const allTabs: Tab[] = ["Pending", "Billed", "Shipped"];
 
   const { data, isError, isLoading } = useGetStocks();
 
   function toggleAll() {
-    setSelectedPeople((prev) => {
-      if (prev.length === data.length) {
-        setChecked(false);
-        return [];
-      } else {
-        setChecked(true);
-        return data.map((s) => s.$id);
-      }
-    });
+    if (!isLoading && data) {
+      setSelectedPeople((prev) => {
+        if (prev.length === data.length) {
+          setChecked(false);
+          return [];
+        } else {
+          setChecked(true);
+          return data.map((s) => s.$id);
+        }
+      });
+    }
   }
 
-  console.log("Prder", data);
-
   const headers = [
+    "Order ID",
+    "Status",
+    "Date",
     "Mill",
     "Quality",
     "Size",
@@ -48,44 +42,6 @@ export default function OrdersTable() {
 
   return (
     <>
-      <div>
-        <div className="sm:hidden">
-          <label htmlFor="tabs" className="sr-only">
-            Select a tab
-          </label>
-          {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
-          <select
-            id="tabs"
-            name="tabs"
-            className="block w-full sm:rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-black mt-3"
-            value={currentTab}
-            onChange={(e) => setCurrentTab(e.target.value as Tab)}
-          >
-            {allTabs.map((tab) => (
-              <option key={tab}>{tab}</option>
-            ))}
-          </select>
-        </div>
-        <div className="hidden sm:block my-4">
-          <nav className="flex space-x-4" aria-label="Tabs">
-            {allTabs.map((tab) => (
-              <button
-                onClick={() => setCurrentTab(tab)}
-                key={tab}
-                className={cn(
-                  tab === currentTab
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "text-gray-500 hover:text-gray-700",
-                  "rounded-md px-3 py-2 text-sm font-medium"
-                )}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-      {/*  */}
       <div className="sm:px-0 lg:px-0">
         <div className="px-4 py-2 mt-3 flow-root bg-white ring-1 ring-gray-300 sm:rounded-lg overflow-hidden">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -139,19 +95,19 @@ export default function OrdersTable() {
                   <tbody className="divide-y divide-gray-200 bg-white">
                     <tr className="border-t border-gray-200">
                       <th
-                        colSpan={7}
+                        colSpan={6}
                         scope="colgroup"
-                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
+                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
                       >
                         {"Ketan Saraf"}
                         <span className="ml-1 text-gray-500 font-light">
-                          {"- H-20, New Alipore, Kolkata, West Bengal, 700053"}
+                          {"- H-20, New Alipore, Kolkata, West Bengal, 700053 "}
                         </span>
                       </th>
                       <th
-                        colSpan={4}
+                        colSpan={6}
                         scope="colgroup"
-                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
+                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
                       >
                         {"Ketan Saraf"}
                         <span className="ml-1 text-gray-500 font-light">
@@ -160,7 +116,7 @@ export default function OrdersTable() {
                       </th>
                     </tr>
                     {!isLoading &&
-                      data.map((stock) => (
+                      data?.map((stock) => (
                         <tr
                           key={stock.$id}
                           className={
@@ -188,6 +144,29 @@ export default function OrdersTable() {
                                 })
                               }
                             />
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {"BE/20034/23-24"}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600",
+                                {
+                                  "bg-green-100 text-green-700":
+                                    stock.status === "Shipped",
+                                  "bg-gray-500 text-gray-600":
+                                    stock.status === "Pending",
+                                  "bg-yellow-100 text-yellow-800":
+                                    stock.status === "Billed",
+                                }
+                              )}
+                            >
+                              {"Pending"}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {"23/12/2020"}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             {stock.mill}

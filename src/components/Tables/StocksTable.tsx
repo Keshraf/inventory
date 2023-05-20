@@ -10,15 +10,17 @@ export default function StocksTable() {
   const { data, isError, isLoading } = useGetStocks();
 
   function toggleAll() {
-    setSelectedPeople((prev) => {
-      if (prev.length === data.length) {
-        setChecked(false);
-        return [];
-      } else {
-        setChecked(true);
-        return data.map((s) => s.$id);
-      }
-    });
+    if (!isLoading && data) {
+      setSelectedPeople((prev) => {
+        if (prev.length === data.length) {
+          setChecked(false);
+          return [];
+        } else {
+          setChecked(true);
+          return data.map((s) => s.$id);
+        }
+      });
+    }
   }
 
   const headers = [
@@ -84,7 +86,7 @@ export default function StocksTable() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {!isLoading &&
-                    data.map((stock) => (
+                    data?.map((stock) => (
                       <tr
                         key={stock.$id}
                         className={

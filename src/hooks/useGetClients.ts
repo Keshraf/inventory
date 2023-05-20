@@ -1,43 +1,26 @@
 import { clientsCollection, databaseId, databases } from "@/utils/client";
-import { Models } from "appwrite";
-import { useEffect, useMemo, useState } from "react";
-
-type Status = {
-  isError: boolean;
-  isLoading: boolean;
-  data: Models.Document[];
-};
+import useSWR from "swr";
 
 const useGetClients = () => {
-  const [status, setStatus] = useState<Status>({
-    isError: false,
-    isLoading: true,
-    data: [],
-  });
-
-  const memoizedPromise = useMemo(() => {
-    return databases.listDocuments(databaseId, clientsCollection);
-  }, []); // Empty dependency array ensures the promise is memoized only once
-
-  useEffect(() => {
-    memoizedPromise
+  const fetcher = async () => {
+    return await databases
+      .listDocuments(databaseId, clientsCollection)
       .then((response) => {
-        setStatus({
-          isLoading: false,
-          isError: false,
-          data: response.documents,
-        });
-      })
-      .catch((error) => {
-        setStatus({
-          isLoading: false,
-          isError: true,
-          data: [],
-        });
+        return response.documents;
       });
-  }, [memoizedPromise]);
+  };
 
-  return status;
+  const { data, error, isLoading, isValidating } = useSWR(
+    "/api/clients",
+    fetcher
+  );
+
+  return {
+    data,
+    isLoading,
+    isError: error,
+    isValidating,
+  };
 };
 
 export default useGetClients;

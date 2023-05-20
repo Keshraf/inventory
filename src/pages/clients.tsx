@@ -1,3 +1,4 @@
+import ClientsHeader from "@/components/ActionHeader/ClientsHeader";
 import Layout from "@/components/Layout";
 import ClientsTable from "@/components/Tables/ClientsTable";
 import Head from "next/head";
@@ -9,6 +10,7 @@ const ClientsPage = () => {
         <title>Clients</title>
       </Head>
       <Layout>
+        <ClientsHeader />
         <ClientsTable />
       </Layout>
     </>

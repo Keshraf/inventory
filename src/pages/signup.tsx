@@ -24,7 +24,7 @@ export default function Signup() {
           await fetch("/api/sendMail", {
             method: "POST",
             body: JSON.stringify({
-              subject: "Login Alert - Balaji Stocks",
+              subject: "Sign Up Alert - Balaji Stocks",
               text: `Someone just signed up to Balaji Stocks with email ${email} and name ${name}`,
             }),
           });
