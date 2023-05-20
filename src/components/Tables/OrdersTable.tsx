@@ -2,7 +2,7 @@ import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
 import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 type Tab = "Pending" | "Billed" | "Shipped";
 
@@ -11,25 +11,89 @@ export default function OrdersTable() {
   const [checked, setChecked] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const search = useAppSelector((state) => state.search);
   const date = useAppSelector((state) =>
     new Date(JSON.parse(state.date)).toLocaleDateString("in")
   );
 
   const { data, isError, isLoading } = useGetStocks(date);
+  const {
+    data: ordersData,
+    isError: isOrdersError,
+    isLoading: isOrdersLoading,
+  } = useGetOrders(date);
 
   function toggleAll() {
-    if (!isLoading && data) {
+    if (!isLoading && ordersData) {
       setSelectedPeople((prev) => {
-        if (prev.length === data.length) {
+        if (prev.length === ordersData.length) {
           setChecked(false);
           return [];
         } else {
           setChecked(true);
-          return data.map((s) => s.$id);
+          return ordersData.map((s) => s.$id);
         }
       });
     }
   }
+
+  const finalOrderData = useMemo(() => {
+    if (isLoading || isOrdersLoading || !ordersData || !data) return [];
+
+    const finalOrder: any[] = [];
+
+    ordersData.forEach((order) => {
+      const filtered = finalOrder.findIndex(
+        (o) =>
+          o.billingClient === order.billingClient &&
+          o.shippingClient === order.shippingClient &&
+          o.billingAddress === order.billingAddress &&
+          o.shippingAddress === order.shippingAddress
+      );
+
+      const stock = data.find((stock) => stock.$id === order.stockId);
+      const orderDetails = {
+        id: order.$id,
+        orderId: order.orderId,
+        status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
+        date: order.dateAdded,
+        mill: stock?.mill,
+        quality: stock?.quality,
+        size: stock?.breadth + "X" + stock?.length,
+        weight: stock?.weigth,
+        gsm: stock?.gsm,
+        sheets: stock?.sheets,
+        quantity: order.quantity,
+        user: order.user,
+        rate: order.rate,
+      };
+
+      if (filtered !== -1) {
+        finalOrder[filtered].order.push(orderDetails);
+      } else {
+        finalOrder.push({
+          billingClient: order.billingClient,
+          shippingClient: order.shippingClient,
+          billingAddress: order.billingAddress,
+          shippingAddress: order.shippingAddress,
+          order: [orderDetails],
+        });
+      }
+    });
+
+    return finalOrder.filter((item) => {
+      const stockSentence = `${item.billingClient} ${item.shippingClient} 
+      ${item.order.reduce((acc: any, order: any) => {
+        return acc + order.orderId;
+      }, "")}
+      `;
+      return stockSentence.toLowerCase().includes(search.toLowerCase());
+    });
+  }, [ordersData, data, isLoading, isOrdersLoading, search]);
+
+  if (isLoading || isOrdersLoading || !ordersData || !data) return <></>;
+
+  console.log("FINAL", finalOrderData);
 
   const headers = [
     "Order ID",
@@ -97,109 +161,125 @@ export default function OrdersTable() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    <tr className="border-t border-gray-200">
-                      <th
-                        colSpan={6}
-                        scope="colgroup"
-                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
-                      >
-                        {"Ketan Saraf"}
-                        <span className="ml-1 text-gray-500 font-light">
-                          {"- H-20, New Alipore, Kolkata, West Bengal, 700053 "}
-                        </span>
-                      </th>
-                      <th
-                        colSpan={6}
-                        scope="colgroup"
-                        className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
-                      >
-                        {"Ketan Saraf"}
-                        <span className="ml-1 text-gray-500 font-light">
-                          {"- H-20, New Alipore, Kolkata, West Bengal, 700053"}
-                        </span>
-                      </th>
-                    </tr>
-                    {!isLoading &&
-                      data?.map((stock) => (
-                        <tr
-                          key={stock.$id}
-                          className={
-                            selectedPeople.includes(stock.$id)
-                              ? "bg-gray-50"
-                              : undefined
-                          }
-                        >
-                          <td className="relative px-7 sm:w-12 sm:px-6">
-                            {selectedPeople.includes(stock.$id) && (
-                              <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
-                            )}
-                            <input
-                              type="checkbox"
-                              className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              value={stock.$id}
-                              checked={selectedPeople.includes(stock.$id)}
-                              onChange={(e) =>
-                                setSelectedPeople((prev) => {
-                                  if (prev.includes(stock.$id)) {
-                                    return prev.filter((p) => p !== stock.$id);
-                                  } else {
-                                    return [...prev, stock.$id];
-                                  }
-                                })
-                              }
-                            />
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {"BE/20034/23-24"}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            <span
-                              className={cn(
-                                "inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600",
-                                {
-                                  "bg-green-100 text-green-700":
-                                    stock.status === "Shipped",
-                                  "bg-gray-500 text-gray-600":
-                                    stock.status === "Pending",
-                                  "bg-yellow-100 text-yellow-800":
-                                    stock.status === "Billed",
-                                }
-                              )}
+                    {finalOrderData.map((order) => {
+                      return (
+                        <>
+                          <tr className="border-t border-gray-200">
+                            <th
+                              colSpan={6}
+                              scope="colgroup"
+                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
                             >
-                              {"Pending"}
-                            </span>
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {"23/12/2020"}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.mill}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.quality}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.breadth + "X" + stock.length}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.weigth}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.gsm}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.sheets}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {stock.quantity}
-                          </td>
-                          <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                            <button className="text-indigo-600 hover:text-indigo-900">
-                              Edit<span className="sr-only">, {stock.$id}</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                              {order.billingClient}
+                              <span className="ml-1 text-gray-500 font-light">
+                                {`- ${order.billingAddress}`}
+                              </span>
+                            </th>
+                            <th
+                              colSpan={6}
+                              scope="colgroup"
+                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
+                            >
+                              {order.shippingClient}
+                              <span className="ml-1 text-gray-500 font-light">
+                                {`- ${order.shippingAddress}`}
+                              </span>
+                            </th>
+                          </tr>
+                          {order.order.map((stock: any) => {
+                            return (
+                              <>
+                                <tr
+                                  key={stock.id}
+                                  className={
+                                    selectedPeople.includes(stock.id)
+                                      ? "bg-gray-50"
+                                      : undefined
+                                  }
+                                >
+                                  <td className="relative px-7 sm:w-12 sm:px-6">
+                                    {selectedPeople.includes(stock.id) && (
+                                      <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
+                                    )}
+                                    <input
+                                      type="checkbox"
+                                      className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                      value={stock.id}
+                                      checked={selectedPeople.includes(
+                                        stock.id
+                                      )}
+                                      onChange={(e) =>
+                                        setSelectedPeople((prev) => {
+                                          if (prev.includes(stock.id)) {
+                                            return prev.filter(
+                                              (p) => p !== stock.id
+                                            );
+                                          } else {
+                                            return [...prev, stock.id];
+                                          }
+                                        })
+                                      }
+                                    />
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.orderId}
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    <span
+                                      className={cn(
+                                        "inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600",
+                                        {
+                                          "bg-green-100 text-green-700":
+                                            stock.status === "Shipped",
+                                          "bg-gray-100 text-gray-600":
+                                            stock.status === "Pending",
+                                          "bg-yellow-100 text-yellow-800":
+                                            stock.status === "Billed",
+                                        }
+                                      )}
+                                    >
+                                      {stock.status}
+                                    </span>
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.date}
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.mill}
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.quality}
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.size}
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.weight} KG
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.gsm} G
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.sheets} S
+                                  </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {stock.quantity} PKTS
+                                  </td>
+                                  <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                                    <button className="text-indigo-600 hover:text-indigo-900">
+                                      Edit
+                                      <span className="sr-only">
+                                        , {stock.$id}
+                                      </span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              </>
+                            );
+                          })}
+                        </>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
