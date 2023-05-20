@@ -10,7 +10,7 @@ type Props = {
 };
 
 const Datepicker = ({ onChange }: Props) => {
-  const matches = useMediaQuery("(min-width: 640px)");
+  const matches = useMediaQuery("(max-width: 640px)");
   const date = useAppSelector((state) => new Date(JSON.parse(state.date)));
   const dispatch = useAppDispatch();
 
@@ -40,8 +40,8 @@ const Datepicker = ({ onChange }: Props) => {
           fontFamily: "Inter",
         },
         input: {
-          borderRadius: matches ? "8px" : "0px",
-          width: matches ? "150px" : "100%",
+          borderRadius: !matches ? "8px" : "0px",
+          width: !matches ? "150px" : "100%",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
