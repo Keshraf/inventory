@@ -2,12 +2,13 @@ import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
 import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 export default function StocksTable() {
   const checkbox = useRef(null);
   const [checked, setChecked] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const search = useAppSelector((state) => state.search);
   const date = useAppSelector((state) =>
     new Date(JSON.parse(state.date)).toLocaleDateString("in")
   );
@@ -19,6 +20,35 @@ export default function StocksTable() {
     isError: isOrderError,
     isLoading: isOrderLoading,
   } = useGetOrders(date);
+
+  const reduced = useMemo(
+    () =>
+      data
+        ?.map((stock) => {
+          const orderQuantity = orderData
+            ?.filter((order) => order.stockId === stock.$id)
+            .reduce((acc, order) => {
+              return acc + order.quantity;
+            }, 0);
+
+          return {
+            ...stock,
+            quantity: stock.quantity - (orderQuantity || 0),
+            mill: stock.mill,
+            quality: stock.quality,
+            breadth: stock.breadth,
+            length: stock.length,
+            weigth: stock.weigth,
+            gsm: stock.gsm,
+            sheets: stock.sheets,
+          };
+        })
+        .filter((item) => {
+          const stockSentence = `${item.mill} ${item.quality} ${item.breadth} X ${item.length} ${item.mill} ${item.quality} ${item.breadth}X${item.length} ${item.weigth}KG ${item.gsm}G ${item.sheets} S`;
+          return stockSentence.toLowerCase().includes(search.toLowerCase());
+        }),
+    [data, orderData, search]
+  );
 
   function toggleAll() {
     if (!isLoading && data) {
@@ -40,22 +70,6 @@ export default function StocksTable() {
   }
 
   console.log("data", data);
-
-  console.log(
-    "REDUCED",
-    data.map((stock) => {
-      const orderQuantity = orderData
-        .filter((order) => order.stockId === stock.$id)
-        .reduce((acc, order) => {
-          return acc + order.quantity;
-        }, 0);
-
-      return {
-        ...stock,
-        quantity: stock.quantity - orderQuantity,
-      };
-    })
-  );
 
   const headers = [
     "Mill",
@@ -120,7 +134,7 @@ export default function StocksTable() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {!isLoading &&
-                    data?.map((stock) => (
+                    reduced?.map((stock) => (
                       <tr
                         key={stock.$id}
                         className={
@@ -156,19 +170,19 @@ export default function StocksTable() {
                           {stock.quality}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {stock.breadth + "X" + stock.length}
+                          {stock.breadth + " X " + stock.length}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {stock.weigth}
+                          {stock.weigth} KG
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {stock.gsm}
+                          {stock.gsm} G
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {stock.sheets}
+                          {stock.sheets} S
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {stock.quantity}
+                          {stock.quantity} PKTS
                         </td>
                         <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                           <button className="text-indigo-600 hover:text-indigo-900">
