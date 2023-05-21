@@ -1,16 +1,30 @@
+import SingleEditOrder from "@/components/Modal/SingleEditOrder";
 import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
 import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import BulkEditOrder from "../Modal/BulkEditOrder";
+import { databaseId, databases, ordersCollection } from "@/utils/client";
+import { toast } from "react-hot-toast";
 
 type Tab = "Pending" | "Billed" | "Shipped";
 
 export default function OrdersTable() {
   const checkbox = useRef(null);
+
+  const [editModal, setEditModal] = useState(false);
+  const [bulkEditModal, setBulkEditModal] = useState(false);
   const [checked, setChecked] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const [singleEditOrder, setSingleEditOrder] = useState({
+    id: "",
+    orderId: "",
+    status: "Pending",
+    quantity: 0,
+  });
+
   const search = useAppSelector((state) => state.search);
   const date = useAppSelector((state) =>
     new Date(JSON.parse(state.date)).toLocaleDateString("in")
@@ -26,12 +40,14 @@ export default function OrdersTable() {
   function toggleAll() {
     if (!isLoading && ordersData) {
       setSelectedPeople((prev) => {
-        if (prev.length === ordersData.length) {
+        const allOrders = finalOrderData.map((order) => order.order).flat();
+        console.log("ALL", allOrders);
+        if (prev.length >= allOrders.length) {
           setChecked(false);
           return [];
         } else {
           setChecked(true);
-          return ordersData.map((s) => s.$id);
+          return allOrders.map((s) => s.id);
         }
       });
     }
@@ -106,10 +122,38 @@ export default function OrdersTable() {
     "GSM",
     "Sheets",
     "Quantity",
+    "Rate",
   ];
+
+  const deleteAll = async () => {
+    try {
+      await Promise.all(
+        selectedPeople.map((id) => {
+          return databases.deleteDocument(databaseId, ordersCollection, id);
+        })
+      );
+      setSelectedPeople([]);
+      setChecked(false);
+      toast.success("Deleted all orders.");
+    } catch (error) {
+      setSelectedPeople([]);
+      setChecked(false);
+      toast.error("Unable to delete all orders.");
+    }
+  };
 
   return (
     <>
+      <SingleEditOrder
+        open={editModal}
+        setOpen={setEditModal}
+        data={singleEditOrder}
+      />
+      <BulkEditOrder
+        open={bulkEditModal}
+        setOpen={setBulkEditModal}
+        data={selectedPeople}
+      />
       <div className="sm:px-0 lg:px-0">
         <div className="px-4 py-2 mt-3 flow-root bg-white ring-1 ring-gray-300 sm:rounded-lg overflow-hidden">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -120,12 +164,14 @@ export default function OrdersTable() {
                     <button
                       type="button"
                       className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                      onClick={() => setBulkEditModal(true)}
                     >
                       Bulk edit
                     </button>
                     <button
                       type="button"
                       className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                      onClick={deleteAll}
                     >
                       Delete all
                     </button>
@@ -176,7 +222,7 @@ export default function OrdersTable() {
                               </span>
                             </th>
                             <th
-                              colSpan={6}
+                              colSpan={7}
                               scope="colgroup"
                               className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
                             >
@@ -262,11 +308,25 @@ export default function OrdersTable() {
                                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     {stock.sheets} S
                                   </td>
-                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-semibold">
                                     {stock.quantity} PKTS
                                   </td>
+                                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    ₹{stock.rate}
+                                  </td>
                                   <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                                    <button className="text-indigo-600 hover:text-indigo-900">
+                                    <button
+                                      className="text-indigo-600 hover:text-indigo-900"
+                                      onClick={() => {
+                                        setEditModal(true);
+                                        setSingleEditOrder({
+                                          id: stock.id,
+                                          orderId: stock.orderId,
+                                          status: stock.status,
+                                          quantity: stock.quantity,
+                                        });
+                                      }}
+                                    >
                                       Edit
                                       <span className="sr-only">
                                         , {stock.$id}
