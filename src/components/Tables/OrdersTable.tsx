@@ -7,6 +7,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import BulkEditOrder from "../Modal/BulkEditOrder";
 import { databaseId, databases, ordersCollection } from "@/utils/client";
 import { toast } from "react-hot-toast";
+import { mutate } from "swr";
 
 type Tab = "Pending" | "Billed" | "Shipped";
 
@@ -76,7 +77,7 @@ export default function OrdersTable() {
         mill: stock?.mill,
         quality: stock?.quality,
         size: stock?.breadth + "X" + stock?.length,
-        weight: stock?.weigth,
+        weight: stock?.weight,
         gsm: stock?.gsm,
         sheets: stock?.sheets,
         quantity: order.quantity,
@@ -134,6 +135,7 @@ export default function OrdersTable() {
       );
       setSelectedPeople([]);
       setChecked(false);
+      mutate(["/api/orders", date]);
       toast.success("Deleted all orders.");
     } catch (error) {
       setSelectedPeople([]);

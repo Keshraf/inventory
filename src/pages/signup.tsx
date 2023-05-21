@@ -2,7 +2,7 @@ import { account } from "@/utils/client";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { nanoid } from "@reduxjs/toolkit";
+import { nanoid } from "nanoid";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
 import Head from "next/head";
