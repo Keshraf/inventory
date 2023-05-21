@@ -76,7 +76,7 @@ export default function OrdersTable() {
         date: order.dateAdded,
         mill: stock?.mill,
         quality: stock?.quality,
-        size: stock?.breadth + "X" + stock?.length,
+        size: stock?.breadth + " X " + stock?.length,
         weight: stock?.weight,
         gsm: stock?.gsm,
         sheets: stock?.sheets,
