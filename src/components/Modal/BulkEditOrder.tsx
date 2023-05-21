@@ -33,16 +33,15 @@ const BulkEditOrder = ({ open, setOpen, data }: Props) => {
     if (status) editData["status"] = status;
 
     try {
-      await Promise.all(
-        data.map((id) => {
-          return databases.updateDocument(
-            databaseId,
-            ordersCollection,
-            id,
-            editData
-          );
-        })
-      );
+      for (let index = 0; index < data.length; index++) {
+        await databases.updateDocument(
+          databaseId,
+          ordersCollection,
+          data[index],
+          editData
+        );
+      }
+
       mutate(["/api/orders", date]);
       toast.success("Edited all orders.");
       setOpen(false);

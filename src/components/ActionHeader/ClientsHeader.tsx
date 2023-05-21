@@ -5,12 +5,14 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { setSearch } from "../../store/search";
 import { useRouter } from "next/router";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import useGetStocks from "@/hooks/useGetStocks";
+import useGetOrders from "@/hooks/useGetOrders";
+import exportExcel from "@/utils/excel";
 
 const ClientsHeader = () => {
   const search = useAppSelector((state) => state.search);
   const [query, setQuery] = useState<string>(search);
   const dispatch = useAppDispatch();
-
   const router = useRouter();
 
   useEffect(() => {
