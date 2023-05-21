@@ -128,11 +128,13 @@ export default function OrdersTable() {
 
   const deleteAll = async () => {
     try {
-      await Promise.all(
-        selectedPeople.map((id) => {
-          return databases.deleteDocument(databaseId, ordersCollection, id);
-        })
-      );
+      for (let i = 0; i < selectedPeople.length; i++) {
+        await databases.deleteDocument(
+          databaseId,
+          ordersCollection,
+          selectedPeople[i]
+        );
+      }
       setSelectedPeople([]);
       setChecked(false);
       mutate(["/api/orders", date]);
@@ -281,7 +283,7 @@ export default function OrdersTable() {
                                             stock.status === "Shipped",
                                           "bg-gray-100 text-gray-600":
                                             stock.status === "Pending",
-                                          "bg-yellow-100 text-yellow-800":
+                                          "bg-blue-100 text-blue-700":
                                             stock.status === "Billed",
                                         }
                                       )}

@@ -59,27 +59,21 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
 
   const confirmOrder = async () => {
     try {
-      await Promise.all(
-        data.map(async (order) => {
-          return databases.createDocument(
-            databaseId,
-            ordersCollection,
-            nanoid(),
-            {
-              stockId: order.id,
-              orderId,
-              billingClient: clientName,
-              billingAddress: clientAddress,
-              shippingClient: shippingClientName,
-              shippingAddress: shippingClientAddress,
-              quantity: order.quantity,
-              dateAdded: date,
-              rate: order.rate,
-              user,
-            }
-          );
-        })
-      );
+      for (let index = 0; index < data.length; index++) {
+        await databases.createDocument(databaseId, ordersCollection, nanoid(), {
+          stockId: data[index].id,
+          orderId,
+          billingClient: clientName,
+          billingAddress: clientAddress,
+          shippingClient: shippingClientName,
+          shippingAddress: shippingClientAddress,
+          quantity: data[index].quantity,
+          dateAdded: date,
+          rate: data[index].rate,
+          user,
+        });
+      }
+
       toast.success("Ordered Stocks");
       mutate(["/api/stocks", date]);
       setOpen(false);
