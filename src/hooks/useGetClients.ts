@@ -5,7 +5,7 @@ import useSWR from "swr";
 const useGetClients = () => {
   const fetcher = async () => {
     return await databases
-      .listDocuments(databaseId, clientsCollection)
+      .listDocuments(databaseId, clientsCollection, [Query.limit(100)])
       .then((response) => {
         return response.documents;
       });

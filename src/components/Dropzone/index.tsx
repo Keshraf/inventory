@@ -3,6 +3,13 @@ import { cn } from "@/utils/cn";
 import { FormEvent, useState } from "react";
 import { toast } from "react-hot-toast";
 import { read, utils, type WorkBook } from "xlsx";
+import {
+  functions,
+  functionsId,
+  databaseId,
+  stocksCollection,
+} from "@/utils/client";
+import { nanoid } from "nanoid";
 
 interface DataItem {
   name: string;
@@ -10,8 +17,55 @@ interface DataItem {
   packets: number;
 }
 
+type StockData = {
+  mill: string;
+  quality: string;
+  quantity: number;
+  breadth: number;
+  length: number | null;
+  gsm: number;
+  sheets: number;
+  weight: number;
+};
+
 const Dropzone = () => {
   const [value, setValue] = useState<File | null>(null);
+
+  const runFn = async (data: StockData[]) => {
+    const promise = functions.createExecution(
+      functionsId,
+      JSON.stringify({
+        databaseId,
+        collectionId: stocksCollection,
+        date: new Date().toLocaleDateString("in"),
+        data: data.map((item) => ({
+          ...item,
+          id: nanoid(),
+        })),
+      })
+    );
+
+    toast.promise(promise, {
+      loading: "Adding Stocks",
+      success: "Stocks Added Successfully",
+      error: "Error Adding Stocks",
+    });
+
+    await promise
+      .then((res) => {
+        return {
+          success: true,
+          data: res,
+        };
+      })
+      .catch((err) => {
+        console.log(err);
+        return {
+          success: false,
+          error: err,
+        };
+      });
+  };
 
   function getSpecs(str: string) {
     const splitStr = str.split(" ");
@@ -123,19 +177,32 @@ const Dropzone = () => {
           duration: 10000,
         });
       });
+      return;
     } else {
+      /*       console.log("Success");
+      runFn(results.data); */
     }
 
     // divide an array into arrays of array of size 10
-    const chunk = (arr: any[], size: number) => {
+    const chunk = (arr: StockData[], size: number) => {
       return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
         arr.slice(i * size, i * size + size)
       );
     };
 
-    const chunkedArr = chunk(formattedData, 10);
+    const chunkedArr = chunk(results.data, 50);
 
     console.log("Chunked", chunkedArr);
+
+    for (let index = 0; index < chunkedArr.length; index++) {
+      await runFn(chunkedArr[index])
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
 
     /* if (results.success) {
       for (let index = 0; index < chunkedArr.length; index++) {

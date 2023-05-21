@@ -1,5 +1,6 @@
 import Dropzone from "@/components/Dropzone";
 import Layout from "@/components/Layout";
+import { nanoid } from "nanoid";
 import Head from "next/head";
 
 const UploadPage = () => {

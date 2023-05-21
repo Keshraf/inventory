@@ -5,6 +5,7 @@ import { cn } from "@/utils/cn";
 import { useMemo, useRef, useState } from "react";
 import SingleEditStock from "../Modal/SingleEditStock";
 import ConfirmOrderModal from "../Modal/ConfirmOrderModal";
+import { functions, functionsId } from "@/utils/client";
 
 type OrderDetails = {
   id: string;
