@@ -8,6 +8,8 @@ import {
   functionsId,
   databaseId,
   stocksCollection,
+  clientsCollection,
+  clientFunctionsId,
 } from "@/utils/client";
 import { nanoid } from "nanoid";
 
@@ -26,6 +28,33 @@ type StockData = {
   gsm: number;
   sheets: number;
   weight: number;
+};
+
+interface ClientItem {
+  sr: string;
+  name: string;
+  address: string;
+  contact: string;
+  mobile: string;
+  phone: string;
+  email: string;
+  pin: string;
+  pan: string;
+  gst: string;
+}
+
+type ClientData = {
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  gst?: string;
+};
+
+type Client = {
+  name: string;
+  address?: string;
+  mobile?: string;
 };
 
 const Dropzone = () => {
@@ -49,6 +78,41 @@ const Dropzone = () => {
       loading: "Adding Stocks",
       success: "Stocks Added Successfully",
       error: "Error Adding Stocks",
+    });
+
+    await promise
+      .then((res) => {
+        return {
+          success: true,
+          data: res,
+        };
+      })
+      .catch((err) => {
+        console.log(err);
+        return {
+          success: false,
+          error: err,
+        };
+      });
+  };
+
+  const runFnClient = async (data: Client[]) => {
+    const promise = functions.createExecution(
+      clientFunctionsId,
+      JSON.stringify({
+        databaseId,
+        collectionId: clientsCollection,
+        data: data.map((item) => ({
+          ...item,
+          id: nanoid(),
+        })),
+      })
+    );
+
+    toast.promise(promise, {
+      loading: "Adding Clients",
+      success: "Clients Added Successfully",
+      error: "Error Adding Clients",
     });
 
     await promise
@@ -178,9 +242,6 @@ const Dropzone = () => {
         });
       });
       return;
-    } else {
-      /*       console.log("Success");
-      runFn(results.data); */
     }
 
     // divide an array into arrays of array of size 10
@@ -203,22 +264,106 @@ const Dropzone = () => {
           console.log(err);
         });
     }
+  };
 
-    /* if (results.success) {
-      for (let index = 0; index < chunkedArr.length; index++) {
-        const element = chunkedArr[index];
-        if (!element) continue;
-        await addStock(element)
-          .then((res) => {
-            toast.success("Stocks Added Successfully");
-          })
-          .catch((err) => {
-            toast.error("Error Adding Stocks");
-          });
+  const clientUploadhandler = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!value) {
+      return;
+    }
+    console.log(e);
+    const f = await value.arrayBuffer();
+    const wb: WorkBook = read(f);
+
+    const data = utils
+      // @ts-ignore
+      .sheet_to_json<ClientItem>(wb.Sheets[wb.SheetNames[0]], {
+        header: [
+          "sr",
+          "name",
+          "address",
+          "contact",
+          "mobile",
+          "phone",
+          "email",
+          "pin",
+          "pan",
+          "gst",
+        ],
+      });
+
+    console.log("Raw", data);
+
+    const slicedData: ClientData[] = data.slice(2).map((item) => {
+      const {
+        sr,
+        address,
+        name,
+        contact,
+        mobile,
+        phone,
+        email,
+        pin,
+        pan,
+        gst,
+      } = item;
+
+      let no = "";
+
+      if (mobile && mobile.length >= 10) {
+        if (mobile.includes("+91")) {
+          no = mobile.substring(3);
+        } else if (phone.includes("+91 ")) {
+          no = phone.substring(4);
+        } else if (mobile.length === 10) {
+          no = mobile;
+        } else {
+          no = "";
+        }
       }
-    } else {
-      console.log(results.error);
-    } */
+
+      if (no === "") {
+        if (phone && phone.length >= 10) {
+          if (phone.includes("+91")) {
+            no = phone.substring(3);
+          } else if (phone.includes("+91 ")) {
+            no = phone.substring(4);
+          } else if (phone.length === 10) {
+            no = phone;
+          } else {
+            no = "";
+          }
+        }
+      }
+
+      return {
+        name,
+        address,
+        mobile: no,
+      };
+    });
+
+    console.log("Response", slicedData);
+
+    const chunk = (arr: ClientData[], size: number) => {
+      return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+        arr.slice(i * size, i * size + size)
+      );
+    };
+
+    const chunkedArr = chunk(slicedData, 50);
+
+    console.log("Chunked", chunkedArr);
+
+    for (let index = 0; index < chunkedArr.length; index++) {
+      await runFnClient(chunkedArr[index])
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   console.log(value);
