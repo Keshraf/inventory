@@ -29,7 +29,12 @@ const useGetClients = () => {
 
   const { data, error, isLoading, isValidating } = useSWR(
     "/api/clients",
-    fetcher
+    fetcher,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
