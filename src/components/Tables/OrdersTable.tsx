@@ -8,6 +8,7 @@ import BulkEditOrder from "../Modal/BulkEditOrder";
 import { databaseId, databases, ordersCollection } from "@/utils/client";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
+import ScrollToTopButton from "../Buttons/ScrollToTopButton";
 
 type Tab = "Pending" | "Billed" | "Shipped";
 
@@ -158,6 +159,7 @@ export default function OrdersTable() {
         setOpen={setBulkEditModal}
         data={selectedPeople}
       />
+      <ScrollToTopButton />
       <div className="sm:px-0 lg:px-0">
         <div className="px-4 py-2 mt-3 flow-root bg-white ring-1 ring-gray-300 sm:rounded-lg overflow-hidden">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

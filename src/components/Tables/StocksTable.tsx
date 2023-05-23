@@ -6,6 +6,7 @@ import { useMemo, useRef, useState } from "react";
 import SingleEditStock from "../Modal/SingleEditStock";
 import ConfirmOrderModal from "../Modal/ConfirmOrderModal";
 import { functions, functionsId } from "@/utils/client";
+import ScrollToTopButton from "../Buttons/ScrollToTopButton";
 
 type OrderDetails = {
   id: string;
@@ -155,6 +156,7 @@ export default function StocksTable() {
         open={openOrder}
         setOpen={setOpenOrder}
       />
+      <ScrollToTopButton />
       <SingleEditStock open={open} setOpen={setOpen} data={editStock} />
       <div className="sm:px-0 lg:px-0">
         <div className="px-4 py-2 mt-3 flow-root bg-white ring-1 ring-gray-300 sm:rounded-lg overflow-hidden">
@@ -274,10 +276,10 @@ export default function StocksTable() {
                             </td>
                             {orderMode ? (
                               <>
-                                <td className="whitespace-nowrap min-w-32 w-40 px-3 text-sm text-gray-500">
+                                <td className="whitespace-nowrap min-w-32 w-56 px-3 py-2 text-sm text-gray-500 flex flex-row justify-between items-center align-middle ">
                                   <input
                                     type="number"
-                                    className="block min-w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    className="block min-w-[80%] rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     value={
                                       orderDetails.find(
                                         (s) => s.id === stock.$id
@@ -313,6 +315,12 @@ export default function StocksTable() {
                                       }
                                     }}
                                   />
+                                  <div>
+                                    <p className="text-xs text-black">MAX</p>
+                                    <p className="text-indigo-500">
+                                      {stock.quantity}
+                                    </p>
+                                  </div>
                                 </td>
 
                                 <td className="whitespace-nowrap min-w-32 w-40 px-3 text-sm text-gray-500">

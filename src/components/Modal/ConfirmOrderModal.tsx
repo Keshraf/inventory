@@ -7,12 +7,10 @@ import {
   stocksCollection,
 } from "@/utils/client";
 import { cn } from "@/utils/cn";
-import { Transition } from "@headlessui/react";
-import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Autocomplete } from "@mantine/core";
 import { nanoid } from "nanoid";
-import { ID } from "appwrite";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import { useRouter } from "next/router";
@@ -58,6 +56,27 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
   }, [open]);
 
   const confirmOrder = async () => {
+    if (orderId.length === 0) {
+      toast.error("Order Id cannot be empty");
+      return;
+    }
+    if (clientName.length === 0) {
+      toast.error("Client Name cannot be empty");
+      return;
+    }
+    if (clientAddress.length === 0) {
+      toast.error("Client Address cannot be empty");
+      return;
+    }
+    if (shippingClientName.length === 0) {
+      toast.error("Shipping Client Name cannot be empty");
+      return;
+    }
+    if (shippingClientAddress.length === 0) {
+      toast.error("Shipping Client Address cannot be empty");
+      return;
+    }
+
     try {
       for (let index = 0; index < data.length; index++) {
         await databases.createDocument(databaseId, ordersCollection, nanoid(), {
@@ -158,6 +177,8 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
               <Autocomplete
                 id="clientName"
                 value={clientName}
+                limit={50}
+                maxDropdownHeight={300}
                 onChange={(value) => setClientName(value)}
                 styles={{
                   input: {
@@ -179,6 +200,8 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
                   id="clientAddress"
                   value={clientAddress}
                   onChange={(value) => setClientAddress(value)}
+                  limit={50}
+                  maxDropdownHeight={300}
                   styles={{
                     input: {
                       border: "none",
@@ -198,6 +221,8 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
               <Autocomplete
                 id="shippingClientName"
                 value={shippingClientName}
+                limit={50}
+                maxDropdownHeight={300}
                 onChange={(value) => setShippingClientName(value)}
                 styles={{
                   input: {
@@ -218,6 +243,8 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
                 <Autocomplete
                   id="shippingClientAddress"
                   value={shippingClientAddress}
+                  limit={50}
+                  maxDropdownHeight={300}
                   onChange={(value) => setShippingClientAddress(value)}
                   styles={{
                     input: {
