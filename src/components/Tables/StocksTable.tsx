@@ -5,8 +5,16 @@ import { cn } from "@/utils/cn";
 import { useMemo, useRef, useState } from "react";
 import SingleEditStock from "../Modal/SingleEditStock";
 import ConfirmOrderModal from "../Modal/ConfirmOrderModal";
-import { functions, functionsId } from "@/utils/client";
+import {
+  databaseId,
+  databases,
+  functions,
+  functionsId,
+  stocksCollection,
+} from "@/utils/client";
 import ScrollToTopButton from "../Buttons/ScrollToTopButton";
+import { toast } from "react-hot-toast";
+import { mutate } from "swr";
 
 type OrderDetails = {
   id: string;
@@ -149,6 +157,27 @@ export default function StocksTable() {
     setOpenOrder(true);
   };
 
+  const deleteHandler = async () => {
+    try {
+      for (let i = 0; i < selectedPeople.length; i++) {
+        if (i > 20) continue;
+        await databases.deleteDocument(
+          databaseId,
+          stocksCollection,
+          selectedPeople[i]
+        );
+      }
+      setSelectedPeople([]);
+      setChecked(false);
+      mutate(["/api/stocks", date]);
+      toast.success("Deleted all selected stocks.");
+    } catch (error) {
+      setSelectedPeople([]);
+      setChecked(false);
+      toast.error("Unable to delete all orders.");
+    }
+  };
+
   return (
     <>
       <ConfirmOrderModal
@@ -175,6 +204,7 @@ export default function StocksTable() {
                     <button
                       type="button"
                       className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                      onClick={deleteHandler}
                     >
                       Delete all
                     </button>

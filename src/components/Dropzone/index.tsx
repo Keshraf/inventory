@@ -60,6 +60,20 @@ type Client = {
 const Dropzone = () => {
   const [value, setValue] = useState<File | null>(null);
 
+  const getNanoId = () => {
+    let id = nanoid();
+    let x = true;
+    let specialCharacter = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+    while (x) {
+      if (specialCharacter.test(id.charAt(0))) {
+        id = nanoid();
+      } else {
+        x = false;
+      }
+    }
+    return id;
+  };
+
   const runFn = async (data: StockData[]) => {
     const promise = functions.createExecution(
       functionsId,
@@ -69,7 +83,7 @@ const Dropzone = () => {
         date: new Date().toLocaleDateString("in"),
         data: data.map((item) => ({
           ...item,
-          id: nanoid(),
+          id: getNanoId(),
         })),
       })
     );
@@ -437,6 +451,9 @@ const Dropzone = () => {
             onChange={(e) => {
               setValue(e.target.files?.[0] || null);
             }}
+            /* onClick={(e) => {
+              console.log(e);
+            }} */
           />
         </label>
       </div>
