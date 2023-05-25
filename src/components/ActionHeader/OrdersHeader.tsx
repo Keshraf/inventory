@@ -61,13 +61,8 @@ const OrdersHeader = () => {
               const stock = data?.find((stock) => stock.$id === order.stockId);
               console.log("stock", stock);
               return {
-                OrderId: order.orderId,
-                BillingClient: order.billingClient,
-                BillingAddress: order.billingAddress,
-                ShippingClient: order.shippingClient,
-                ShippingAddress: order.shippingAddress,
-                status: order.status,
                 OrderDate: order.dateAdded,
+                OrderId: order.orderId,
                 Stock:
                   stock?.mill +
                   " " +
@@ -84,6 +79,13 @@ const OrdersHeader = () => {
                   "G " +
                   stock?.sheets +
                   "S",
+                status: order.status,
+                Quantity: order.quantity,
+                Rate: order.rate,
+                BillingClient: order.billingClient,
+                BillingAddress: order.billingAddress,
+                ShippingClient: order.shippingClient,
+                ShippingAddress: order.shippingAddress,
               };
             }),
             fileName: "orders",
