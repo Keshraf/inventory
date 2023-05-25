@@ -63,6 +63,7 @@ const OrdersHeader = () => {
               return {
                 OrderDate: order.dateAdded,
                 OrderId: order.orderId,
+                status: order.status,
                 Stock:
                   stock?.mill +
                   " " +
@@ -79,7 +80,6 @@ const OrdersHeader = () => {
                   "G " +
                   stock?.sheets +
                   "S",
-                status: order.status,
                 Quantity: order.quantity,
                 Rate: order.rate,
                 BillingClient: order.billingClient,
