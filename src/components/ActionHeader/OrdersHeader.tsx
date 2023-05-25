@@ -83,8 +83,8 @@ const OrdersHeader = () => {
                 Quantity: order.quantity,
                 Rate: order.rate,
                 BillingClient: order.billingClient,
-                BillingAddress: order.billingAddress,
                 ShippingClient: order.shippingClient,
+                BillingAddress: order.billingAddress,
                 ShippingAddress: order.shippingAddress,
               };
             }),
