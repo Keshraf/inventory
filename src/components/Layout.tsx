@@ -26,6 +26,7 @@ export default function Layout({ children }: Props) {
     { name: "Orders", href: "/orders" },
     { name: "Clients", href: "/clients" },
     { name: "Upload", href: "/upload" },
+    { name: "Settings", href: "/settings" },
   ];
   const [currentTab, setCurrentTab] = useState<string>("");
   const user = useAppSelector((state) => state.user);

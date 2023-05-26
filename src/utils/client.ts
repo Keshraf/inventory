@@ -13,6 +13,7 @@ const functions = new Functions(client);
 const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE || "";
 const functionsId = process.env.NEXT_PUBLIC_APPWRITE_FN || "";
 const clientFunctionsId = process.env.NEXT_PUBLIC_APPWRITE_CLIENT_FN || "";
+const deleteFunctionsId = process.env.NEXT_PUBLIC_APPWRITE_DELETE_FN || "";
 const stocksCollection = process.env.NEXT_PUBLIC_APPWRITE_STOCKS || "";
 const clientsCollection = process.env.NEXT_PUBLIC_APPWRITE_CLIENTS || "";
 const ordersCollection = process.env.NEXT_PUBLIC_APPWRITE_ORDERS || "";
@@ -24,6 +25,7 @@ export {
   databases,
   databaseId,
   functionsId,
+  deleteFunctionsId,
   clientFunctionsId,
   stocksCollection,
   clientsCollection,
