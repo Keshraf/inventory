@@ -23,7 +23,6 @@ const StocksHeader = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("query", query);
     dispatch(setSearch(query));
   }, [query, dispatch]);
 

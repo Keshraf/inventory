@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSWRConfig } from "swr";
 import { useRouter } from "next/router";
+import Asterisk from "../UI/Asterisk";
 
 type OrderDetails = {
   id: string;
@@ -48,12 +49,17 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
   } = useGetClients();
 
   useEffect(() => {
+    const year = Number(new Date().getFullYear().toString().slice(-2));
+    const code =
+      new Date().toLocaleTimeString().split(":").slice(0, 2).join(":") +
+      "/" +
+      date.split("/").slice(0, 2).join("-");
     setClientName("");
     setClientAddress("");
     setShippingClientName("");
     setShippingClientAddress("");
-    setOrderId("");
-  }, [open]);
+    setOrderId(`BE/${code}/${year}-${year + 1}/${user.split(" ")[0]}`);
+  }, [open, user, date]);
 
   const confirmOrder = async () => {
     if (orderId.length === 0) {
@@ -128,9 +134,6 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
 
   if (clientsLoading && !clients) return <></>;
 
-  console.log(clients);
-  console.log("Data", data);
-
   return (
     <>
       {open && (
@@ -156,7 +159,8 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
                 htmlFor="orderId"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Order Id
+                {"Order Id"}
+                <Asterisk />
               </label>
               <div className="mt-2">
                 <input
@@ -173,6 +177,7 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
             <div className="px-4">
               <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
                 {"Client Name"}
+                <Asterisk />
               </label>
               <Autocomplete
                 id="clientName"
@@ -180,6 +185,28 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
                 limit={50}
                 maxDropdownHeight={300}
                 onChange={(value) => setClientName(value)}
+                styles={{
+                  input: {
+                    border: "none",
+                  },
+                }}
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 overflow-clip p-1"
+                placeholder="Pick one"
+                data={getClientNames}
+              />
+            </div>
+
+            <div className="px-4">
+              <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+                {"Shipping Client Name"}
+                <Asterisk />
+              </label>
+              <Autocomplete
+                id="shippingClientName"
+                value={shippingClientName}
+                limit={50}
+                maxDropdownHeight={300}
+                onChange={(value) => setShippingClientName(value)}
                 styles={{
                   input: {
                     border: "none",
@@ -213,27 +240,6 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
                 />
               </div>
             )}
-
-            <div className="px-4">
-              <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
-                {"Shipping Client Name"}
-              </label>
-              <Autocomplete
-                id="shippingClientName"
-                value={shippingClientName}
-                limit={50}
-                maxDropdownHeight={300}
-                onChange={(value) => setShippingClientName(value)}
-                styles={{
-                  input: {
-                    border: "none",
-                  },
-                }}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 overflow-clip p-1"
-                placeholder="Pick one"
-                data={getClientNames}
-              />
-            </div>
 
             {shippingClientName.length !== 0 && (
               <div className="px-4">

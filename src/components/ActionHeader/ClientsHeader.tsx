@@ -18,7 +18,6 @@ const ClientsHeader = () => {
   const { data, isLoading, isError } = useGetClients();
 
   useEffect(() => {
-    console.log("query", query);
     dispatch(setSearch(query));
   }, [query, dispatch]);
 

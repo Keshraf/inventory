@@ -14,8 +14,6 @@ const Datepicker = ({ onChange }: Props) => {
   const date = useAppSelector((state) => new Date(JSON.parse(state.date)));
   const dispatch = useAppDispatch();
 
-  console.log("date", date);
-
   return (
     <MantineDatePicker
       value={date}

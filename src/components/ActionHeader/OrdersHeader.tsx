@@ -27,7 +27,6 @@ const OrdersHeader = () => {
   } = useGetOrders(date);
 
   useEffect(() => {
-    console.log("query", query);
     dispatch(setSearch(query));
   }, [query, dispatch]);
 
@@ -59,7 +58,6 @@ const OrdersHeader = () => {
           exportExcel({
             data: ordersData?.map((order) => {
               const stock = data?.find((stock) => stock.$id === order.stockId);
-              console.log("stock", stock);
               return {
                 OrderDate: order.dateAdded,
                 OrderId: order.orderId,

@@ -43,7 +43,6 @@ export default function OrdersTable() {
     if (!isLoading && ordersData) {
       setSelectedPeople((prev) => {
         const allOrders = finalOrderData.map((order) => order.order).flat();
-        console.log("ALL", allOrders);
         if (prev.length >= allOrders.length) {
           setChecked(false);
           return [];
@@ -110,8 +109,6 @@ export default function OrdersTable() {
   }, [ordersData, data, isLoading, isOrdersLoading, search]);
 
   if (isLoading || isOrdersLoading || !ordersData || !data) return <></>;
-
-  console.log("FINAL", finalOrderData);
 
   const headers = [
     "Order ID",

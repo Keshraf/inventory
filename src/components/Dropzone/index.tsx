@@ -229,7 +229,6 @@ const Dropzone = () => {
       });
 
     const slicedData = data.slice(13, data.length - 1);
-    console.log("Response", slicedData);
 
     const formattedData = slicedData.map((item: DataItem, index) => {
       const specs = getSpecs(item.name);
@@ -242,11 +241,7 @@ const Dropzone = () => {
       };
     });
 
-    console.log("Response", formattedData);
-
     const results = StockArrSchema.safeParse(formattedData);
-
-    console.log("Results", results);
 
     if (!results.success) {
       const issues = results.error.issues;
@@ -266,8 +261,6 @@ const Dropzone = () => {
     };
 
     const chunkedArr = chunk(results.data, 50);
-
-    console.log("Chunked", chunkedArr);
 
     for (let index = 0; index < chunkedArr.length; index++) {
       await runFn(chunkedArr[index])
@@ -305,8 +298,6 @@ const Dropzone = () => {
           "gst",
         ],
       });
-
-    console.log("Raw", data);
 
     const slicedData: ClientData[] = data.slice(2).map((item) => {
       const {
@@ -357,8 +348,6 @@ const Dropzone = () => {
       };
     });
 
-    console.log("Response", slicedData);
-
     const chunk = (arr: ClientData[], size: number) => {
       return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
         arr.slice(i * size, i * size + size)
@@ -366,8 +355,6 @@ const Dropzone = () => {
     };
 
     const chunkedArr = chunk(slicedData, 50);
-
-    console.log("Chunked", chunkedArr);
 
     for (let index = 0; index < chunkedArr.length; index++) {
       await runFnClient(chunkedArr[index])
@@ -379,8 +366,6 @@ const Dropzone = () => {
         });
     }
   };
-
-  console.log(value);
 
   return (
     <>
@@ -451,9 +436,6 @@ const Dropzone = () => {
             onChange={(e) => {
               setValue(e.target.files?.[0] || null);
             }}
-            /* onClick={(e) => {
-              console.log(e);
-            }} */
           />
         </label>
       </div>

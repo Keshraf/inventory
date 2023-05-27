@@ -20,7 +20,6 @@ const SessionPublic = ({ children }: Props) => {
     account
       .get()
       .then((res) => {
-        console.log(res);
         dispatch(
           setUser({
             name: res.name,

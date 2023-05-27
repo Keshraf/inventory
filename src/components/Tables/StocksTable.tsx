@@ -91,7 +91,6 @@ export default function StocksTable() {
   }
 
   if (isLoading || isOrderLoading || !data || !orderData) {
-    console.log("loading");
     return <></>;
   }
 
