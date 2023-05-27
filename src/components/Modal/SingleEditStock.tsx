@@ -156,7 +156,7 @@ const SingleEditStock = ({ open, setOpen, data }: Props) => {
             }
           }}
         >
-          <div className="w-full sm:w-96 h-screen max-h-screen sm:max-h-[500px] min-h-[100px] bg-white sm:rounded-lg shadow-lg gap-3 flex flex-col overflow-y-auto py-4">
+          <div className="w-full sm:w-96 h-screen max-h-screen sm:max-h-screen min-h-[100px] bg-white sm:rounded-lg shadow-lg gap-3 flex flex-col overflow-y-auto py-4">
             <div className="flex flex-row justify-end items-center text-base font-semibold leading-7 text-gray-900 bg-gray-100 px-4 py-2">
               <h2>Edit Stock</h2>
               <span
