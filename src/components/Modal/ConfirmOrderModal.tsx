@@ -64,18 +64,18 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
       toast.error("Client Name cannot be empty");
       return;
     }
-    if (clientAddress.length === 0) {
+    /* if (clientAddress.length === 0) {
       toast.error("Client Address cannot be empty");
       return;
-    }
+    } */
     if (shippingClientName.length === 0) {
       toast.error("Shipping Client Name cannot be empty");
       return;
     }
-    if (shippingClientAddress.length === 0) {
+    /* if (shippingClientAddress.length === 0) {
       toast.error("Shipping Client Address cannot be empty");
       return;
-    }
+    } */
 
     try {
       for (let index = 0; index < data.length; index++) {
@@ -144,7 +144,7 @@ const ConfirmOrderModal = ({ open, setOpen, data }: Props) => {
             }
           }}
         >
-          <div className="w-full sm:w-96 h-auto max-h-screen sm:max-h-[500px] min-h-[100px] bg-white sm:rounded-lg shadow-lg gap-3 flex flex-col overflow-y-auto py-4">
+          <div className="w-full sm:w-96 h-auto max-h-screen sm:max-h-[800px] min-h-[100px] bg-white sm:rounded-lg shadow-lg gap-3 flex flex-col overflow-y-auto py-4">
             <div className="flex flex-row justify-end items-center text-base font-semibold leading-7 text-gray-900 bg-gray-100 px-4 py-2">
               <h2>Place Order</h2>
               <span className="ml-auto" onClick={() => setOpen(false)}>
