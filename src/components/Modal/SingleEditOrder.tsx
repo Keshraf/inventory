@@ -14,12 +14,14 @@ type Props = {
     orderId: string;
     quantity: number;
     status: string;
+    rate: number;
   };
 };
 
 const SingleEditOrder = ({ open, setOpen, data }: Props) => {
   const [orderId, setOrderId] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
+  const [rate, setRate] = useState<number>(0);
   const [status, setStatus] = useState<string>("");
   const date = useAppSelector((state) =>
     new Date(JSON.parse(state.date)).toLocaleDateString("in")
@@ -31,6 +33,7 @@ const SingleEditOrder = ({ open, setOpen, data }: Props) => {
       setOrderId(data.orderId);
       setQuantity(data.quantity);
       setStatus(data.status.toLowerCase());
+      setRate(data.rate);
     }
   }, [open, data]);
 
@@ -40,6 +43,7 @@ const SingleEditOrder = ({ open, setOpen, data }: Props) => {
         orderId,
         quantity,
         status,
+        rate,
       });
       toast.success("Edited Order");
       mutate(["/api/orders", date]);
@@ -99,6 +103,25 @@ const SingleEditOrder = ({ open, setOpen, data }: Props) => {
                   id="quantity"
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 "
+                  placeholder="10"
+                />
+              </div>
+            </div>
+            <div className="px-4">
+              <label
+                htmlFor="quantity"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Rate
+              </label>
+              <div className="mt-2">
+                <input
+                  type="number"
+                  name="rate"
+                  id="rate"
+                  value={rate}
+                  onChange={(e) => setRate(Number(e.target.value))}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 "
                   placeholder="10"
                 />

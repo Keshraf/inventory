@@ -3,7 +3,7 @@ import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
 import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import BulkEditOrder from "../Modal/BulkEditOrder";
 import { databaseId, databases, ordersCollection } from "@/utils/client";
 import { toast } from "react-hot-toast";
@@ -25,6 +25,7 @@ export default function OrdersTable() {
     orderId: "",
     status: "Pending",
     quantity: 0,
+    rate: 0,
   });
 
   const search = useAppSelector((state) => state.search);
@@ -178,6 +179,9 @@ export default function OrdersTable() {
                     >
                       Delete all
                     </button>
+                    <div className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-default">
+                      {selectedPeople.length} selected
+                    </div>
                   </div>
                 )}
                 <table className="min-w-full table-fixed divide-y divide-gray-300 bg-white">
@@ -327,6 +331,7 @@ export default function OrdersTable() {
                                           orderId: stock.orderId,
                                           status: stock.status,
                                           quantity: stock.quantity,
+                                          rate: stock.rate,
                                         });
                                       }}
                                     >

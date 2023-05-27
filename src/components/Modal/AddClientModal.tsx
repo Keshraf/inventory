@@ -6,6 +6,7 @@ import {
   ordersCollection,
 } from "@/utils/client";
 import { cn } from "@/utils/cn";
+import id from "@/utils/id";
 import { Transition } from "@headlessui/react";
 import {
   CheckCircleIcon,
@@ -19,44 +20,35 @@ import { useSWRConfig } from "swr";
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  data: {
-    id: string;
-    name: string;
-    mobile: string;
-    address: string[];
-  };
 };
 
-const SingleEditClient = ({ open, setOpen, data }: Props) => {
+const AddClientModal = ({ open, setOpen }: Props) => {
   const [name, setName] = useState<string>("");
   const [mobile, setMobile] = useState<string>("");
   const [address, setAddress] = useState<string[]>([]);
   const [newAddress, setNewAddress] = useState<string>("");
-  const date = useAppSelector((state) =>
-    new Date(JSON.parse(state.date)).toLocaleDateString("in")
-  );
   const { mutate } = useSWRConfig();
 
   useEffect(() => {
     if (open) {
-      setName(data.name);
-      setMobile(data.mobile);
-      setAddress(data.address);
+      setName("");
+      setMobile("");
+      setAddress([]);
     }
-  }, [open, data]);
+  }, [open]);
 
   const editOrder = async () => {
     try {
-      await databases.updateDocument(databaseId, clientsCollection, data.id, {
+      await databases.createDocument(databaseId, clientsCollection, id(), {
         name,
         mobile,
         address,
       });
-      toast.success("Edited Client");
+      toast.success("Adding Client");
       mutate("/api/clients");
       setOpen(false);
     } catch (error) {
-      toast.error("Error editing client.");
+      toast.error("Error adding client.");
     }
   };
 
@@ -75,7 +67,7 @@ const SingleEditClient = ({ open, setOpen, data }: Props) => {
         >
           <div className="w-96 h-auto min-h-[100px] bg-white rounded-lg shadow-lg gap-3 flex flex-col overflow-hidden py-4">
             <h2 className="text-base font-semibold leading-7 text-gray-900 bg-gray-100 px-4 py-2">
-              Edit Client
+              Add Client
             </h2>
             <div className="px-4">
               <label
@@ -180,4 +172,4 @@ const SingleEditClient = ({ open, setOpen, data }: Props) => {
   );
 };
 
-export default SingleEditClient;
+export default AddClientModal;

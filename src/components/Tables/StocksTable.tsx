@@ -207,6 +207,9 @@ export default function StocksTable() {
                     >
                       Delete all
                     </button>
+                    <div className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-default">
+                      {selectedPeople.length} selected
+                    </div>
                   </div>
                 )}
                 <table className="min-w-full table-fixed divide-y divide-gray-300 bg-white">

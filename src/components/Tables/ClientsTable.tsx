@@ -91,6 +91,27 @@ export default function ClientsTable() {
               <div className="relative">
                 {selectedPeople.length > 0 && (
                   <div className="absolute left-14 top-0 flex h-12 items-center space-x-3 bg-white sm:left-12">
+                    {selectedPeople.length === 1 && (
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                        onClick={() => {
+                          const stock = finalClientData.find(
+                            (s) => s.$id === selectedPeople[0]
+                          );
+                          if (!stock) return;
+                          setEditClient({
+                            id: stock.$id,
+                            name: stock.name,
+                            mobile: stock.mobile,
+                            address: stock.address,
+                          });
+                          setOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
@@ -99,6 +120,9 @@ export default function ClientsTable() {
                     >
                       Delete all
                     </button>
+                    <div className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-default">
+                      {selectedPeople.length} selected
+                    </div>
                   </div>
                 )}
                 <table className="min-w-full table-fixed divide-y divide-gray-300 bg-white">

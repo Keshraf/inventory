@@ -4,17 +4,19 @@ import SearchBar from "../SearchBar";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { setSearch } from "../../store/search";
 import { useRouter } from "next/router";
-import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, PlusIcon } from "@heroicons/react/24/outline";
 import useGetStocks from "@/hooks/useGetStocks";
 import useGetOrders from "@/hooks/useGetOrders";
 import exportExcel from "@/utils/excel";
 import useGetClients from "@/hooks/useGetClients";
+import AddClientModal from "../Modal/AddClientModal";
 
 const ClientsHeader = () => {
   const search = useAppSelector((state) => state.search);
   const [query, setQuery] = useState<string>(search);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [open, setOpen] = useState<boolean>(false);
   const { data, isLoading, isError } = useGetClients();
 
   useEffect(() => {
@@ -36,12 +38,21 @@ const ClientsHeader = () => {
   }, [dispatch, router.events]);
 
   return (
-    <div className="w-full my-3 flex sm:flex-row flex-col gap-2 h-auto">
-      <div>
-        <Datepicker />
-      </div>
-      <SearchBar query={query} setQuery={setQuery} />
-      <button
+    <>
+      <AddClientModal open={open} setOpen={setOpen} />
+      <div className="w-full my-3 flex sm:flex-row flex-col gap-2 h-auto">
+        <div>
+          <Datepicker />
+        </div>
+        <SearchBar query={query} setQuery={setQuery} />
+        <button
+          type="button"
+          className="sm:inline-flex min-h-[50px] hidden items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          onClick={() => setOpen(true)}
+        >
+          <PlusIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+        </button>
+        {/* <button
         type="button"
         className="sm:inline-flex min-h-[50px] hidden items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         disabled={isLoading || isError}
@@ -55,8 +66,9 @@ const ClientsHeader = () => {
       >
         <ArrowDownTrayIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
         Export
-      </button>
-    </div>
+      </button> */}
+      </div>
+    </>
   );
 };
 
