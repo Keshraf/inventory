@@ -221,20 +221,20 @@ export default function OrdersTable() {
                             <th
                               colSpan={6}
                               scope="colgroup"
-                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
+                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
                             >
                               {order.billingClient}
-                              <span className="ml-1 text-gray-500 font-light">
+                              <span className="ml-1 text-gray-800 font-normal">
                                 {`- ${order.billingAddress}`}
                               </span>
                             </th>
                             <th
                               colSpan={7}
                               scope="colgroup"
-                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-medium text-gray-900 sm:pl-3"
+                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
                             >
                               {order.shippingClient}
-                              <span className="ml-1 text-gray-500 font-light">
+                              <span className="ml-1 text-gray-800 font-normal">
                                 {`- ${order.shippingAddress}`}
                               </span>
                             </th>

@@ -381,7 +381,14 @@ export default function StocksTable() {
                                 </td>
                               </>
                             ) : (
-                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              <td
+                                className={cn(
+                                  "whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-semibold",
+                                  {
+                                    "text-red-500": stock.quantity < 100,
+                                  }
+                                )}
+                              >
                                 {stock.quantity} PKTS
                               </td>
                             )}
