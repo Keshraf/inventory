@@ -8,6 +8,10 @@ import { clientsCollection, databaseId, databases } from "@/utils/client";
 import { mutate } from "swr";
 import { toast } from "react-hot-toast";
 import SingleEditClient from "../Modal/SingleEditClient";
+import {
+  removeAllSpecialCharacters,
+  removeSpecialCharacters,
+} from "@/utils/helper";
 
 type Client = {
   id: string;
@@ -49,9 +53,19 @@ export default function ClientsTable() {
   const finalClientData = useMemo(() => {
     if (!isLoading && data) {
       return data?.filter((client) => {
-        const sentence = `${client.name} ${client.mobile} ${client.address}`;
+        const sentence = removeAllSpecialCharacters(
+          `${client.name}`.toLowerCase()
+        );
+        const finalSearch = removeAllSpecialCharacters(search.toLowerCase());
 
-        return sentence.toLowerCase().includes(search.toLowerCase());
+        if (search.length === 1) {
+          return sentence.startsWith(finalSearch.charAt(0));
+        }
+
+        return (
+          sentence.includes(finalSearch) &&
+          sentence.startsWith(finalSearch.charAt(0))
+        );
       });
     } else {
       return [];
@@ -185,7 +199,7 @@ export default function ClientsTable() {
                           />
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {stock.name}
+                          {removeSpecialCharacters(stock.name)}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {stock.mobile}

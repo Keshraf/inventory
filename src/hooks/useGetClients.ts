@@ -1,4 +1,5 @@
 import { clientsCollection, databaseId, databases } from "@/utils/client";
+import { removeSpecialCharacters } from "@/utils/helper";
 import { Models, Query } from "appwrite";
 import useSWR from "swr";
 
@@ -23,8 +24,13 @@ const useGetClients = () => {
           final.push(...response.documents);
         });
     }
-
-    return final;
+    let stuff: Models.Document[] = final.map((doc) => {
+      return {
+        ...doc,
+        name: removeSpecialCharacters(doc.name),
+      };
+    });
+    return stuff;
   };
 
   const { data, error, isLoading, isValidating } = useSWR(

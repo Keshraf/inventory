@@ -2,7 +2,7 @@ import useGetOrders from "@/hooks/useGetOrders";
 import useGetStocks from "@/hooks/useGetStocks";
 import { useAppSelector } from "@/store";
 import { cn } from "@/utils/cn";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SingleEditStock from "../Modal/SingleEditStock";
 import ConfirmOrderModal from "../Modal/ConfirmOrderModal";
 import {
@@ -46,6 +46,13 @@ export default function StocksTable() {
     isLoading: isOrderLoading,
   } = useGetOrders(date);
 
+  useEffect(() => {
+    if (selectedPeople.length === 0) {
+      setChecked(false);
+      setOrderMode(false);
+    }
+  }, [selectedPeople]);
+
   const reduced = useMemo(
     () =>
       data
@@ -70,7 +77,7 @@ export default function StocksTable() {
           };
         })
         .filter((item) => {
-          const stockSentence = `${item.mill} ${item.quality} ${item.breadth} X ${item.length} ${item.mill} ${item.quality} ${item.breadth}X${item.length} ${item.weight}KG ${item.gsm}G ${item.sheets} S`;
+          const stockSentence = `${item.mill} ${item.quality} ${item.breadth} X ${item.length} ${item.weight}KG {item.gsm}G ${item.sheets} S ${item.mill} ${item.quality} ${item.breadth}X${item.length} ${item.weight}KG ${item.gsm}G ${item.sheets} S ${item.mill} ${item.quality} ${item.gsm} ${item.mill} ${item.gsm}`;
           return stockSentence.toLowerCase().includes(search.toLowerCase());
         }),
     [data, orderData, search]
@@ -317,24 +324,13 @@ export default function StocksTable() {
                                         (s) => s.id === stock.$id
                                       )?.quantity
                                     }
-                                    max={stock.quantity}
+                                    /* max={stock.quantity} */
                                     min={0}
                                     onChange={(e) => {
-                                      if (
-                                        Number(e.target.value) > stock.quantity
-                                      ) {
-                                        e.target.value =
-                                          stock.quantity.toString();
-                                        changeOrderQuantity(
-                                          stock.$id,
-                                          stock.quantity
-                                        );
-                                      } else {
-                                        changeOrderQuantity(
-                                          stock.$id,
-                                          Number(e.target.value)
-                                        );
-                                      }
+                                      changeOrderQuantity(
+                                        stock.$id,
+                                        Number(e.target.value)
+                                      );
                                     }}
                                     onBlur={(e) => {
                                       if (
@@ -347,7 +343,7 @@ export default function StocksTable() {
                                       }
                                     }}
                                   />
-                                  <div>
+                                  <div className="ml-2">
                                     <p className="text-xs text-black">MAX</p>
                                     <p className="text-indigo-500">
                                       {stock.quantity}
