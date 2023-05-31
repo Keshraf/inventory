@@ -9,6 +9,7 @@ import { databaseId, databases, ordersCollection } from "@/utils/client";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import ScrollToTopButton from "../Buttons/ScrollToTopButton";
+import RemarkModal from "../Modal/RemarkModal";
 
 type Tab = "Pending" | "Billed" | "Shipped";
 
@@ -20,6 +21,8 @@ export default function OrdersTable() {
   const [checked, setChecked] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const [remarkModal, setRemarkModal] = useState(false);
+  const [remarkData, setRemarkData] = useState<string>("");
   const [singleEditOrder, setSingleEditOrder] = useState({
     id: "",
     orderId: "",
@@ -55,6 +58,11 @@ export default function OrdersTable() {
     }
   }
 
+  function uncheckAll() {
+    setChecked(false);
+    setSelectedPeople([]);
+  }
+
   const finalOrderData = useMemo(() => {
     if (isLoading || isOrdersLoading || !ordersData || !data) return [];
 
@@ -68,7 +76,11 @@ export default function OrdersTable() {
           o.billingAddress === order.billingAddress &&
           o.shippingAddress === order.shippingAddress
       );
-
+      const remarkId =
+        order.billingClient +
+        order.shippingClient +
+        order.billingAddress +
+        order.shippingAddress;
       const stock = data.find((stock) => stock.$id === order.stockId);
       const orderDetails = {
         id: order.$id,
@@ -84,6 +96,7 @@ export default function OrdersTable() {
         quantity: order.quantity,
         user: order.user,
         rate: order.rate,
+        remark: order.remark,
       };
 
       if (filtered !== -1) {
@@ -94,6 +107,7 @@ export default function OrdersTable() {
           shippingClient: order.shippingClient,
           billingAddress: order.billingAddress,
           shippingAddress: order.shippingAddress,
+          remarkId: remarkId,
           order: [orderDetails],
         });
       }
@@ -157,6 +171,11 @@ export default function OrdersTable() {
         setOpen={setBulkEditModal}
         data={selectedPeople}
       />
+      <RemarkModal
+        open={remarkModal}
+        setOpen={setRemarkModal}
+        id={remarkData}
+      />
       <ScrollToTopButton />
       <div className="sm:px-0 lg:px-0">
         <div className="px-4 py-2 mt-3 flow-root bg-white ring-1 ring-gray-300 sm:rounded-lg overflow-hidden">
@@ -179,7 +198,12 @@ export default function OrdersTable() {
                     >
                       Delete all
                     </button>
-                    <div className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-default">
+                    <div
+                      className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-pointer"
+                      onClick={() => {
+                        uncheckAll();
+                      }}
+                    >
                       {selectedPeople.length} selected
                     </div>
                   </div>
@@ -229,7 +253,7 @@ export default function OrdersTable() {
                               </span>
                             </th>
                             <th
-                              colSpan={7}
+                              colSpan={6}
                               scope="colgroup"
                               className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
                             >
@@ -237,6 +261,31 @@ export default function OrdersTable() {
                               <span className="ml-1 text-gray-800 font-normal">
                                 {`- ${order.shippingAddress}`}
                               </span>
+                            </th>
+                            <th
+                              colSpan={1}
+                              scope="colgroup"
+                              className="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4 group cursor-pointer"
+                              onClick={() => {
+                                setRemarkModal(true);
+                                setRemarkData(order.remarkId);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className="w-4 h-4 group-hover:stroke-indigo-600 group-hover:fill-indigo-600"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+                                  fill="inherit"
+                                />
+                              </svg>
                             </th>
                           </tr>
                           {order.order.map((stock: any) => {
@@ -246,8 +295,8 @@ export default function OrdersTable() {
                                   key={stock.id}
                                   className={
                                     selectedPeople.includes(stock.id)
-                                      ? "bg-gray-50"
-                                      : undefined
+                                      ? "bg-gray-50 hover:bg-gray-100"
+                                      : "hover:bg-gray-50"
                                   }
                                 >
                                   <td className="relative px-7 sm:w-12 sm:px-6">

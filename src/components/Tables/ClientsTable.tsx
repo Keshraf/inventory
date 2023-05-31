@@ -50,6 +50,11 @@ export default function ClientsTable() {
     }
   }
 
+  function uncheckAll() {
+    setChecked(false);
+    setSelectedPeople([]);
+  }
+
   const finalClientData = useMemo(() => {
     if (!isLoading && data) {
       return data?.filter((client) => {
@@ -134,7 +139,12 @@ export default function ClientsTable() {
                     >
                       Delete all
                     </button>
-                    <div className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-default">
+                    <div
+                      className="inline-flex items-center rounded bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-300 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white cursor-pointer"
+                      onClick={() => {
+                        uncheckAll();
+                      }}
+                    >
                       {selectedPeople.length} selected
                     </div>
                   </div>
@@ -174,8 +184,8 @@ export default function ClientsTable() {
                         key={stock.$id}
                         className={
                           selectedPeople.includes(stock.$id)
-                            ? "bg-gray-50"
-                            : undefined
+                            ? "bg-gray-50 hover:bg-gray-100"
+                            : "hover:bg-gray-50"
                         }
                       >
                         <td className="relative px-7 sm:w-12 sm:px-6">
