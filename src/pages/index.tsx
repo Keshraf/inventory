@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Balaji Stocks</title>
+        <title>Paper Stocks</title>
       </Head>
       <div className="bg-white min-h-screen">
         <header className="absolute inset-x-0 top-0 z-50">
@@ -28,7 +28,7 @@ export default function Home() {
           >
             <div className="flex lg:flex-1">
               <Link href="/" className="-m-1.5 p-1.5">
-                <span className="sr-only">Balaji Stocks</span>
+                <span className="sr-only">Paper Stocks</span>
                 <Image
                   className="h-8 w-auto"
                   src="./Logo3.svg"
@@ -78,7 +78,7 @@ export default function Home() {
             <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
               <div className="flex items-center justify-between">
                 <a href="#" className="-m-1.5 p-1.5">
-                  <span className="sr-only">Balaji Stocks</span>
+                  <span className="sr-only">Paper Stocks</span>
                   <Image
                     className="h-8 w-auto"
                     src="./Logo3.svg"
@@ -148,7 +148,7 @@ export default function Home() {
             </div>
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                Balaji Stocks
+                Paper Stocks
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 An accounting software for small businesses and startups. We
