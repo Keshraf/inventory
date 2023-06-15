@@ -12,7 +12,7 @@ type Request = NextApiRequest & {
 };
 
 export default async function handler(req: Request, res: NextApiResponse) {
-  if (req.method !== "POST") {
+  if (req.method !== "POST" || true) {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
